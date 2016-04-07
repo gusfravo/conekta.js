@@ -1,11 +1,27 @@
 module.exports = function(grunt) {
 
+  grunt.loadNpmTasks('grunt-contrib-jasmine');
+
   grunt.loadNpmTasks('grunt-contrib-coffee');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
+
+
   grunt.initConfig({
+    jasmine: {
+        src: 'dist/conekta.js',
+        options: {
+            vendor: [
+                'node_modules/jquery/dist/jquery.js',
+                'node_modules/jasmine-jquery/lib/jasmine-jquery.js'
+            ],
+            '--web-security' : false,
+          specs: 'spec/*.js',
+          helpers: 'spec/helpers/*helper.{js,coffee}'
+        }
+    },
     coffee: {
       compile: {
         files: {
@@ -73,4 +89,5 @@ module.exports = function(grunt) {
   });
   
   grunt.registerTask('default', ['coffee', 'concat', 'uglify']);
+
 };

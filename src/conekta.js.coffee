@@ -4,9 +4,15 @@ _language = 'es'
 kount_merchant_id = '205000'
 antifraud_config = {}
 
+unless window.conektaAjax
+  if typeof jQuery != 'undefined'
+    window.conektaAjax = jQuery.ajax #fallback to jquery
+  else
+    console.error("no either a jQuery or ajax function provided")
+
 localstorageGet = (key)->
-  if typeof localStorage != 'undefined' and typeof localStorage.getItem != 'undefined' 
-    try 
+  if typeof localStorage != 'undefined' and typeof localStorage.getItem != 'undefined'
+    try
       localStorage.setItem('testKey', '1')
       localStorage.removeItem('testKey')
       return localStorage.getItem(key)
@@ -16,8 +22,8 @@ localstorageGet = (key)->
     null
 
 localstorageSet = (key, value)->
-  if typeof localStorage != 'undefined' and typeof localStorage.setItem != 'undefined' 
-    try 
+  if typeof localStorage != 'undefined' and typeof localStorage.setItem != 'undefined'
+    try
       localStorage.setItem('testKey', '1')
       localStorage.removeItem('testKey')
       return localStorage.setItem(key, value)
@@ -74,7 +80,7 @@ send_beacon = ->
           s.async = true
           s.src = url
           x = document.getElementsByTagName('script')[0]
-          x.parentNode.insertBefore s, x          
+          x.parentNode.insertBefore s, x
           return
         ls()
 
@@ -147,7 +153,7 @@ else if typeof Shopify != 'undefined'
 
     originalGetCart(tapped_callback)
     return
-  
+
   #tapping onItemAdded
   originalOnItemAdded = Shopify.onItemAdded
   Shopify.onItemAdded = (callback)->
@@ -161,7 +167,7 @@ else if typeof Shopify != 'undefined'
 
     originalOnItemAdded(tapped_callback)
     return
-  
+
   #tapping onCartUpdated
   originalOnCartUpdated = Shopify.onCartUpdated
   Shopify.onCartUpdated = (callback)->
@@ -182,7 +188,7 @@ else if typeof Shopify != 'undefined'
           getCartCallback(cart)
           return
       return
-    
+
 else
   useable_characters = "abcdefghijklmnopqrstuvwxyz0123456789"
   if typeof crypto != 'undefined' and typeof crypto.getRandomValues != 'undefined'
@@ -215,7 +221,7 @@ getAntifraudConfig = ()->
 
     url = "https://d3fxnri0mz3rya.cloudfront.net/antifraud/#{public_key}.js"
 
-    ajax(
+    conektaAjax(
       url: url
       dataType: 'jsonp'
       jsonpCallback: 'conekta_antifraud_config_jsonp'
@@ -437,7 +443,7 @@ if !window.Conekta
           params.data['auth_token'] = Conekta.getPublicKey()
           params.data['conekta_client_user_agent'] = '{"agent":"Conekta JavascriptBindings/0.3.0"}'
 
-          ajax(
+          conektaAjax(
             url: base_url + params.url
             dataType: 'jsonp'
             data: params.data
@@ -446,7 +452,7 @@ if !window.Conekta
           )
         else
           if typeof (new XMLHttpRequest()).withCredentials != 'undefined'
-            ajax(
+            conektaAjax(
               url: base_url + params.url
               type: 'POST'
               dataType: 'json'
