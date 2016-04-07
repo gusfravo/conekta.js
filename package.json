@@ -9,6 +9,9 @@
     "type": "git",
     "url": "https://github.com/conekta/conekta.js"
   },
+  "scripts": {
+    "test": "grunt jasmine"
+  },
   "license": "MIT",
   "devDependencies": {
     "grunt": "^0.4.5",
