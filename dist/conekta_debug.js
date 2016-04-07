@@ -2928,339 +2928,382 @@ easyXDM.stack.RpcBehavior = function(proxy, config){
 global.easyXDM = easyXDM;
 })(window, document, location, window.setTimeout, decodeURIComponent, encodeURIComponent);
 
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var type
-try {
-  type = require('type-of')
-} catch (ex) {
-  //hide from browserify
-  var r = require
-  type = r('type')
-}
-
-var jsonpID = 0,
-    document = window.document,
-    key,
-    name,
-    rscript = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-    scriptTypeRE = /^(?:text|application)\/javascript/i,
-    xmlTypeRE = /^(?:text|application)\/xml/i,
-    jsonType = 'application/json',
-    htmlType = 'text/html',
-    blankRE = /^\s*$/
-
-window.ajax = module.exports = function(options){
-  var settings = extend({}, options || {})
-  for (key in ajax.settings) if (settings[key] === undefined) settings[key] = ajax.settings[key]
-
-  ajaxStart(settings)
-
-  if (!settings.crossDomain) settings.crossDomain = /^([\w-]+:)?\/\/([^\/]+)/.test(settings.url) &&
-    RegExp.$2 != window.location.host
-
-  var dataType = settings.dataType, hasPlaceholder = /=\?/.test(settings.url)
-  if (dataType == 'jsonp' || hasPlaceholder) {
-    if (!hasPlaceholder) settings.url = appendQuery(settings.url, 'callback=?')
-    return ajax.JSONP(settings)
-  }
-
-  if (!settings.url) settings.url = window.location.toString()
-  serializeData(settings)
-
-  var mime = settings.accepts[dataType],
-      baseHeaders = { },
-      protocol = /^([\w-]+:)\/\//.test(settings.url) ? RegExp.$1 : window.location.protocol,
-      xhr = ajax.settings.xhr(), abortTimeout
-
-  if (!settings.crossDomain) baseHeaders['X-Requested-With'] = 'XMLHttpRequest'
-  if (mime) {
-    baseHeaders['Accept'] = mime
-    if (mime.indexOf(',') > -1) mime = mime.split(',', 2)[0]
-    xhr.overrideMimeType && xhr.overrideMimeType(mime)
-  }
-  if (settings.contentType || (settings.data && settings.type.toUpperCase() != 'GET'))
-    baseHeaders['Content-Type'] = (settings.contentType || 'application/x-www-form-urlencoded')
-  settings.headers = extend(baseHeaders, settings.headers || {})
-
-  xhr.onreadystatechange = function(){
-    if (xhr.readyState == 4) {
-      clearTimeout(abortTimeout)
-      var result, error = false
-      if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304 || (xhr.status == 0 && protocol == 'file:')) {
-        dataType = dataType || mimeToDataType(xhr.getResponseHeader('content-type'))
-        result = xhr.responseText
-
-        try {
-          if (dataType == 'script')    (1,eval)(result)
-          else if (dataType == 'xml')  result = xhr.responseXML
-          else if (dataType == 'json') result = blankRE.test(result) ? null : JSON.parse(result)
-        } catch (e) { error = e }
-
-        if (error) ajaxError(error, 'parsererror', xhr, settings)
-        else ajaxSuccess(result, xhr, settings)
-      } else {
-        ajaxError(null, 'error', xhr, settings)
-      }
+(function e(t, n, r) {
+    function s(o, u) {
+        if (!n[o]) {
+            if (!t[o]) {
+                var a = typeof require == "function" && require;
+                if (!u && a)return a(o, !0);
+                if (i)return i(o, !0);
+                throw new Error("Cannot find module '" + o + "'")
+            }
+            var f = n[o] = {exports: {}};
+            t[o][0].call(f.exports, function (e) {
+                var n = t[o][1][e];
+                return s(n ? n : e)
+            }, f, f.exports, e, t, n, r)
+        }
+        return n[o].exports
     }
-  }
 
-  var async = 'async' in settings ? settings.async : true
-  xhr.open(settings.type, settings.url, async)
+    var i = typeof require == "function" && require;
+    for (var o = 0; o < r.length; o++)s(r[o]);
+    return s
+})({
+    1: [function (require, module, exports) {
+        var type
+        try {
+            type = require('type-of')
+        } catch (ex) {
+            //hide from browserify
+            var r = require
+            type = r('type')
+        }
 
-  for (name in settings.headers) xhr.setRequestHeader(name, settings.headers[name])
+        var jsonpID = 0,
+            document = window.document,
+            key,
+            name,
+            rscript = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+            scriptTypeRE = /^(?:text|application)\/javascript/i,
+            xmlTypeRE = /^(?:text|application)\/xml/i,
+            jsonType = 'application/json',
+            htmlType = 'text/html',
+            blankRE = /^\s*$/
 
-  if (ajaxBeforeSend(xhr, settings) === false) {
-    xhr.abort()
-    return false
-  }
+        window.conektaAjax = module.exports = function (options) {
+            var settings = extend({}, options || {})
+            for (key in conektaAjax.settings) if (settings[key] === undefined) settings[key] = conektaAjax.settings[key]
 
-  if (settings.timeout > 0) abortTimeout = setTimeout(function(){
-      xhr.onreadystatechange = empty
-      xhr.abort()
-      ajaxError(null, 'timeout', xhr, settings)
-    }, settings.timeout)
+            ajaxStart(settings)
 
-  // avoid sending empty string (#319)
-  xhr.send(settings.data ? settings.data : null)
-  return xhr
-}
+            if (!settings.crossDomain) settings.crossDomain = /^([\w-]+:)?\/\/([^\/]+)/.test(settings.url) &&
+                RegExp.$2 != window.location.host
+
+            var dataType = settings.dataType, hasPlaceholder = /=\?/.test(settings.url)
+            if (dataType == 'jsonp' || hasPlaceholder) {
+                if (!hasPlaceholder) settings.url = appendQuery(settings.url, 'callback=?')
+                return conektaAjax.JSONP(settings)
+            }
+
+            if (!settings.url) settings.url = window.location.toString()
+            serializeData(settings)
+
+            var mime = settings.accepts[dataType],
+                baseHeaders = {},
+                protocol = /^([\w-]+:)\/\//.test(settings.url) ? RegExp.$1 : window.location.protocol,
+                xhr = conektaAjax.settings.xhr(), abortTimeout
+
+            if (!settings.crossDomain) baseHeaders['X-Requested-With'] = 'XMLHttpRequest'
+            if (mime) {
+                baseHeaders['Accept'] = mime
+                if (mime.indexOf(',') > -1) mime = mime.split(',', 2)[0]
+                xhr.overrideMimeType && xhr.overrideMimeType(mime)
+            }
+            if (settings.contentType || (settings.data && settings.type.toUpperCase() != 'GET'))
+                baseHeaders['Content-Type'] = (settings.contentType || 'application/x-www-form-urlencoded')
+            settings.headers = extend(baseHeaders, settings.headers || {})
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    clearTimeout(abortTimeout)
+                    var result, error = false
+                    if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304 || (xhr.status == 0 && protocol == 'file:')) {
+                        dataType = dataType || mimeToDataType(xhr.getResponseHeader('content-type'))
+                        result = xhr.responseText
+
+                        try {
+                            if (dataType == 'script')    (1, eval)(result)
+                            else if (dataType == 'xml')  result = xhr.responseXML
+                            else if (dataType == 'json') result = blankRE.test(result) ? null : JSON.parse(result)
+                        } catch (e) {
+                            error = e
+                        }
+
+                        if (error) ajaxError(error, 'parsererror', xhr, settings)
+                        else ajaxSuccess(result, xhr, settings)
+                    } else {
+                        ajaxError(null, 'error', xhr, settings)
+                    }
+                }
+            }
+
+            var async = 'async' in settings ? settings.async : true
+            xhr.open(settings.type, settings.url, async)
+
+            for (name in settings.headers) xhr.setRequestHeader(name, settings.headers[name])
+
+            if (ajaxBeforeSend(xhr, settings) === false) {
+                xhr.abort()
+                return false
+            }
+
+            if (settings.timeout > 0) abortTimeout = setTimeout(function () {
+                xhr.onreadystatechange = empty
+                xhr.abort()
+                ajaxError(null, 'timeout', xhr, settings)
+            }, settings.timeout)
+
+            // avoid sending empty string (#319)
+            xhr.send(settings.data ? settings.data : null)
+            return xhr
+        }
 
 
 // trigger a custom event and return false if it was cancelled
-function triggerAndReturn(context, eventName, data) {
-  //todo: Fire off some events
-  //var event = $.Event(eventName)
-  //$(context).trigger(event, data)
-  return true;//!event.defaultPrevented
-}
+        function triggerAndReturn(context, eventName, data) {
+            //todo: Fire off some events
+            //var event = $.Event(eventName)
+            //$(context).trigger(event, data)
+            return true;//!event.defaultPrevented
+        }
 
 // trigger an Ajax "global" event
-function triggerGlobal(settings, context, eventName, data) {
-  if (settings.global) return triggerAndReturn(context || document, eventName, data)
-}
+        function triggerGlobal(settings, context, eventName, data) {
+            if (settings.global) return triggerAndReturn(context || document, eventName, data)
+        }
 
 // Number of active Ajax requests
-ajax.active = 0
+        conektaAjax.active = 0;
 
-function ajaxStart(settings) {
-  if (settings.global && ajax.active++ === 0) triggerGlobal(settings, null, 'ajaxStart')
-}
-function ajaxStop(settings) {
-  if (settings.global && !(--ajax.active)) triggerGlobal(settings, null, 'ajaxStop')
-}
+        function ajaxStart(settings) {
+            if (settings.global && conektaAjax.active++ === 0) triggerGlobal(settings, null, 'ajaxStart')
+        }
+
+        function ajaxStop(settings) {
+            if (settings.global && !(--conektaAjax.active)) triggerGlobal(settings, null, 'ajaxStop')
+        }
 
 // triggers an extra global event "ajaxBeforeSend" that's like "ajaxSend" but cancelable
-function ajaxBeforeSend(xhr, settings) {
-  var context = settings.context
-  if (settings.beforeSend.call(context, xhr, settings) === false ||
-      triggerGlobal(settings, context, 'ajaxBeforeSend', [xhr, settings]) === false)
-    return false
+        function ajaxBeforeSend(xhr, settings) {
+            var context = settings.context;
+            if (settings.beforeSend.call(context, xhr, settings) === false ||
+                triggerGlobal(settings, context, 'ajaxBeforeSend', [xhr, settings]) === false)
+                return false;
 
-  triggerGlobal(settings, context, 'ajaxSend', [xhr, settings])
-}
-function ajaxSuccess(data, xhr, settings) {
-  var context = settings.context, status = 'success'
-  settings.success.call(context, data, status, xhr)
-  triggerGlobal(settings, context, 'ajaxSuccess', [xhr, settings, data])
-  ajaxComplete(status, xhr, settings)
-}
+            triggerGlobal(settings, context, 'ajaxSend', [xhr, settings])
+        }
+
+        function ajaxSuccess(data, xhr, settings) {
+            var context = settings.context, status = 'success'
+            settings.success.call(context, data, status, xhr)
+            triggerGlobal(settings, context, 'ajaxSuccess', [xhr, settings, data])
+            ajaxComplete(status, xhr, settings)
+        }
+
 // type: "timeout", "error", "abort", "parsererror"
-function ajaxError(error, type, xhr, settings) {
-  var context = settings.context
-  settings.error.call(context, xhr, type, error)
-  triggerGlobal(settings, context, 'ajaxError', [xhr, settings, error])
-  ajaxComplete(type, xhr, settings)
-}
+        function ajaxError(error, type, xhr, settings) {
+            var context = settings.context
+            settings.error.call(context, xhr, type, error)
+            triggerGlobal(settings, context, 'ajaxError', [xhr, settings, error])
+            ajaxComplete(type, xhr, settings)
+        }
+
 // status: "success", "notmodified", "error", "timeout", "abort", "parsererror"
-function ajaxComplete(status, xhr, settings) {
-  var context = settings.context
-  settings.complete.call(context, xhr, status)
-  triggerGlobal(settings, context, 'ajaxComplete', [xhr, settings])
-  ajaxStop(settings)
-}
+        function ajaxComplete(status, xhr, settings) {
+            var context = settings.context
+            settings.complete.call(context, xhr, status)
+            triggerGlobal(settings, context, 'ajaxComplete', [xhr, settings])
+            ajaxStop(settings)
+        }
 
 // Empty function, used as default callback
-function empty() {}
+        function empty() {
+        }
 
-ajax.JSONP = function(options){
-  if (!('type' in options)) return ajax(options);
+        conektaAjax.JSONP = function (options) {
+            if (!('type' in options)) return conektaAjax(options);
 
-  var callbackName = 'jsonp' + (++jsonpID);
-  if (options['jsonpCallback']){
-    callbackName = options['jsonpCallback'];
-  }
+            var callbackName = 'jsonp' + (++jsonpID);
+            if (options['jsonpCallback']) {
+                callbackName = options['jsonpCallback'];
+            }
 
-  var script = document.createElement('script'),
-    abort = function(){
-      //todo: remove script
-      //$(script).remove()
-      if (callbackName in window) window[callbackName] = empty;
-      ajaxComplete('abort', xhr, options);
-    },
-    xhr = { abort: abort }, abortTimeout,
-    head = document.getElementsByTagName("head")[0]
-      || document.documentElement;
+            var script = document.createElement('script'),
+                abort = function () {
+                    //todo: remove script
+                    //$(script).remove()
+                    if (callbackName in window) window[callbackName] = empty;
+                    ajaxComplete('abort', xhr, options);
+                },
+                xhr = {abort: abort}, abortTimeout,
+                head = document.getElementsByTagName("head")[0]
+                    || document.documentElement;
 
-  if (options.error) script.onerror = function() {
-    xhr.abort();
-    options.error();
-  }
+            if (options.error) script.onerror = function () {
+                xhr.abort();
+                options.error();
+            }
 
-  window[callbackName] = function(data){
-    clearTimeout(abortTimeout);
-      //todo: remove script
-      //$(script).remove()
-    try {
-      delete window[callbackName];
-    }catch(e){
-      window[callbackName] = undefined;
-    }
-    ajaxSuccess(data, xhr, options);
-  }
+            window[callbackName] = function (data) {
+                clearTimeout(abortTimeout);
+                //todo: remove script
+                //$(script).remove()
+                try {
+                    delete window[callbackName];
+                } catch (e) {
+                    window[callbackName] = undefined;
+                }
+                ajaxSuccess(data, xhr, options);
+            }
 
-  serializeData(options);
-  script.src = options.url.replace(/=\?/, '=' + callbackName);
+            serializeData(options);
+            script.src = options.url.replace(/=\?/, '=' + callbackName);
 
-  // Use insertBefore instead of appendChild to circumvent an IE6 bug.
-  // This arises when a base node is used (see jQuery bugs #2709 and #4378).
-  head.insertBefore(script, head.firstChild);
+            // Use insertBefore instead of appendChild to circumvent an IE6 bug.
+            // This arises when a base node is used (see jQuery bugs #2709 and #4378).
+            head.insertBefore(script, head.firstChild);
 
-  if (options.timeout > 0) abortTimeout = setTimeout(function(){
-      xhr.abort();
-      ajaxComplete('timeout', xhr, options);
-    }, options.timeout);
+            if (options.timeout > 0) abortTimeout = setTimeout(function () {
+                xhr.abort();
+                ajaxComplete('timeout', xhr, options);
+            }, options.timeout);
 
-  return xhr;
-}
+            return xhr;
+        }
 
-ajax.settings = {
-  // Default type of request
-  type: 'GET',
-  // Callback that is executed before request
-  beforeSend: empty,
-  // Callback that is executed if the request succeeds
-  success: empty,
-  // Callback that is executed the the server drops error
-  error: empty,
-  // Callback that is executed on request complete (both: error and success)
-  complete: empty,
-  // The context for the callbacks
-  context: null,
-  // Whether to trigger "global" Ajax events
-  global: true,
-  // Transport
-  xhr: function () {
-    return new window.XMLHttpRequest()
-  },
-  // MIME types mapping
-  accepts: {
-    script: 'text/javascript, application/javascript',
-    json:   jsonType,
-    xml:    'application/xml, text/xml',
-    html:   htmlType,
-    text:   'text/plain'
-  },
-  // Whether the request is to another domain
-  crossDomain: false,
-  // Default timeout
-  timeout: 0
-}
+        conektaAjax.settings = {
+            // Default type of request
+            type: 'GET',
+            // Callback that is executed before request
+            beforeSend: empty,
+            // Callback that is executed if the request succeeds
+            success: empty,
+            // Callback that is executed the the server drops error
+            error: empty,
+            // Callback that is executed on request complete (both: error and success)
+            complete: empty,
+            // The context for the callbacks
+            context: null,
+            // Whether to trigger "global" Ajax events
+            global: true,
+            // Transport
+            xhr: function () {
+                return new window.XMLHttpRequest()
+            },
+            // MIME types mapping
+            accepts: {
+                script: 'text/javascript, application/javascript',
+                json: jsonType,
+                xml: 'application/xml, text/xml',
+                html: htmlType,
+                text: 'text/plain'
+            },
+            // Whether the request is to another domain
+            crossDomain: false,
+            // Default timeout
+            timeout: 0
+        }
 
-function mimeToDataType(mime) {
-  return mime && ( mime == htmlType ? 'html' :
-    mime == jsonType ? 'json' :
-    scriptTypeRE.test(mime) ? 'script' :
-    xmlTypeRE.test(mime) && 'xml' ) || 'text'
-}
+        function mimeToDataType(mime) {
+            return mime && ( mime == htmlType ? 'html' :
+                    mime == jsonType ? 'json' :
+                        scriptTypeRE.test(mime) ? 'script' :
+                        xmlTypeRE.test(mime) && 'xml' ) || 'text'
+        }
 
-function appendQuery(url, query) {
-  return (url + '&' + query).replace(/[&?]{1,2}/, '?')
-}
+        function appendQuery(url, query) {
+            return (url + '&' + query).replace(/[&?]{1,2}/, '?')
+        }
 
 // serialize payload and append it to the URL for GET requests
-function serializeData(options) {
-  if (type(options.data) === 'object') options.data = param(options.data)
-  if (options.data && (!options.type || options.type.toUpperCase() == 'GET'))
-    options.url = appendQuery(options.url, options.data)
-}
+        function serializeData(options) {
+            if (type(options.data) === 'object') options.data = param(options.data)
+            if (options.data && (!options.type || options.type.toUpperCase() == 'GET'))
+                options.url = appendQuery(options.url, options.data)
+        }
 
-ajax.get = function(url, success){ return ajax({ url: url, success: success }) }
+        conektaAjax.get = function (url, success) {
+            return conektaAjax({url: url, success: success})
+        }
 
-ajax.post = function(url, data, success, dataType){
-  if (type(data) === 'function') dataType = dataType || success, success = data, data = null
-  return ajax({ type: 'POST', url: url, data: data, success: success, dataType: dataType })
-}
+        conektaAjax.post = function (url, data, success, dataType) {
+            if (type(data) === 'function') dataType = dataType || success, success = data, data = null
+            return conektaAjax({type: 'POST', url: url, data: data, success: success, dataType: dataType})
+        }
 
-ajax.getJSON = function(url, success){
-  return ajax({ url: url, success: success, dataType: 'json' })
-}
+        conektaAjax.getJSON = function (url, success) {
+            return conektaAjax({url: url, success: success, dataType: 'json'})
+        }
 
-var escape = encodeURIComponent
+        var escape = encodeURIComponent
 
-function serialize(params, obj, traditional, scope){
-  var array = type(obj) === 'array';
-  for (var key in obj) {
-    var value = obj[key];
+        function serialize(params, obj, traditional, scope) {
+            var array = type(obj) === 'array';
+            for (var key in obj) {
+                var value = obj[key];
 
-    if (scope) key = traditional ? scope : scope + '[' + (array ? '' : key) + ']'
-    // handle data in serializeArray() format
-    if (!scope && array) params.add(value.name, value.value)
-    // recurse into nested objects
-    else if (traditional ? (type(value) === 'array') : (type(value) === 'object'))
-      serialize(params, value, traditional, key)
-    else params.add(key, value)
-  }
-}
+                if (scope) key = traditional ? scope : scope + '[' + (array ? '' : key) + ']'
+                // handle data in serializeArray() format
+                if (!scope && array) params.add(value.name, value.value)
+                // recurse into nested objects
+                else if (traditional ? (type(value) === 'array') : (type(value) === 'object'))
+                    serialize(params, value, traditional, key)
+                else params.add(key, value)
+            }
+        }
 
-function param(obj, traditional){
-  var params = []
-  params.add = function(k, v){ this.push(escape(k) + '=' + escape(v)) }
-  serialize(params, obj, traditional)
-  return params.join('&').replace('%20', '+')
-}
+        function param(obj, traditional) {
+            var params = []
+            params.add = function (k, v) {
+                this.push(escape(k) + '=' + escape(v))
+            }
+            serialize(params, obj, traditional)
+            return params.join('&').replace('%20', '+')
+        }
 
-function extend(target) {
-  var slice = Array.prototype.slice;
-  var arr = slice.call(arguments, 1);
-  var length = arr.length,
-      element = null;
-  for (var i = 0; i < length; i++) {
-    source = arr[i];
-    for (key in source)
-    if (source[key] !== undefined)
-      target[key] = source[key];
-  }
-  return target
-}
-},{"type-of":2}],2:[function(require,module,exports){
-var toString = Object.prototype.toString
+        function extend(target) {
+            var slice = Array.prototype.slice;
+            var arr = slice.call(arguments, 1);
+            var length = arr.length,
+                element = null;
+            for (var i = 0; i < length; i++) {
+                source = arr[i];
+                for (key in source)
+                    if (source[key] !== undefined)
+                        target[key] = source[key];
+            }
+            return target
+        }
+    }, {"type-of": 2}], 2: [function (require, module, exports) {
+        var toString = Object.prototype.toString
 
-module.exports = function(val){
-  switch (toString.call(val)) {
-    case '[object Function]': return 'function'
-    case '[object Date]': return 'date'
-    case '[object RegExp]': return 'regexp'
-    case '[object Arguments]': return 'arguments'
-    case '[object Array]': return 'array'
-    case '[object String]': return 'string'
-  }
+        module.exports = function (val) {
+            switch (toString.call(val)) {
+                case '[object Function]':
+                    return 'function'
+                case '[object Date]':
+                    return 'date'
+                case '[object RegExp]':
+                    return 'regexp'
+                case '[object Arguments]':
+                    return 'arguments'
+                case '[object Array]':
+                    return 'array'
+                case '[object String]':
+                    return 'string'
+            }
 
-  if (val === null) return 'null'
-  if (val === undefined) return 'undefined'
-  if (val && val.nodeType === 1) return 'element'
-  if (val === Object(val)) return 'object'
+            if (val === null) return 'null'
+            if (val === undefined) return 'undefined'
+            if (val && val.nodeType === 1) return 'element'
+            if (val === Object(val)) return 'object'
 
-  return typeof val
-}
+            return typeof val
+        }
 
-},{}]},{},[1])
+    }, {}]
+}, {}, [1])
 ;
 
-/*conekta.js v1.0.0 | 2013- Conekta | https://github.com/conekta/conekta.js/blob/master/LICENSE-MIT.txt
-*/
+/* 
+ * conekta.js v1.0.0
+ * Conekta 2013
+ * https://github.com/conekta/conekta.js/blob/master/LICENSE.txt
+ */
 
 (function() {
-  var Base64, antifraud_config, base_url, fingerprint, getAntifraudConfig, getCartCallback, i, kount_merchant_id, localstorageGet, localstorageSet, originalGetCart, originalOnCartUpdated, originalOnItemAdded, publishable_key, random_index, random_value_array, send_beacon, session_id, useable_characters, _i, _j, _language, _ref;
+  var $tag, Base64, _language, antifraud_config, base_url, fingerprint, getAntifraudConfig, getCartCallback, i, j, k, kount_merchant_id, localstorageGet, localstorageSet, originalGetCart, originalOnCartUpdated, originalOnItemAdded, public_key, random_index, random_value_array, ref, send_beacon, session_id, useable_characters;
 
   base_url = 'https://api.conekta.io/';
 
@@ -3271,6 +3314,14 @@ module.exports = function(val){
   kount_merchant_id = '205000';
 
   antifraud_config = {};
+
+  if (!window.conektaAjax) {
+    if (typeof jQuery !== 'undefined') {
+      window.conektaAjax = jQuery.ajax;
+    } else {
+      console.error("no either a jQuery or ajax function provided");
+    }
+  }
 
   localstorageGet = function(key) {
     var error;
@@ -3304,7 +3355,7 @@ module.exports = function(val){
     }
   };
 
-  publishable_key = localstorageGet('_conekta_publishable_key');
+  public_key = localstorageGet('_conekta_publishable_key');
 
   fingerprint = function() {
     var body, e, iframe, image;
@@ -3317,11 +3368,11 @@ module.exports = function(val){
         iframe.setAttribute("scrolling", "no");
         iframe.setAttribute("frameborder", "0");
         iframe.setAttribute("width", "1");
-        iframe.setAttribute("src", "" + base_url + "fraud_providers/kount/logo.htm?m=" + kount_merchant_id + "&s=" + session_id);
+        iframe.setAttribute("src", base_url + "fraud_providers/kount/logo.htm?m=" + kount_merchant_id + "&s=" + session_id);
         image = document.createElement('img');
         image.setAttribute("height", "1");
         image.setAttribute("width", "1");
-        image.setAttribute("src", "" + base_url + "fraud_providers/kount/logo.gif?m=" + kount_merchant_id + "&s=" + session_id);
+        image.setAttribute("src", base_url + "fraud_providers/kount/logo.gif?m=" + kount_merchant_id + "&s=" + session_id);
         try {
           iframe.appendChild(image);
         } catch (_error) {
@@ -3335,7 +3386,7 @@ module.exports = function(val){
   };
 
   send_beacon = function() {
-    var ls, _user_id;
+    var _user_id, ls;
     if (typeof document !== 'undefined' && typeof document.body !== 'undefined' && document.body && (document.readyState === 'interactive' || document.readyState === 'complete') && 'undefined' !== typeof Conekta) {
       if (!Conekta._helpers.beacon_sent) {
         if (antifraud_config['riskified']) {
@@ -3446,11 +3497,11 @@ module.exports = function(val){
     if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues !== 'undefined') {
       random_value_array = new Uint32Array(32);
       crypto.getRandomValues(random_value_array);
-      for (i = _i = 0, _ref = random_value_array.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+      for (i = j = 0, ref = random_value_array.length - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
         session_id += useable_characters.charAt(random_value_array[i] % 36);
       }
     } else {
-      for (i = _j = 0; _j <= 30; i = ++_j) {
+      for (i = k = 0; k <= 30; i = ++k) {
         random_index = Math.floor(Math.random() * 36);
         session_id += useable_characters.charAt(random_index);
       }
@@ -3472,8 +3523,8 @@ module.exports = function(val){
         return send_beacon();
       };
       error_callback = function() {};
-      url = "https://d3fxnri0mz3rya.cloudfront.net/antifraud/" + document.domain + ".js";
-      return ajax({
+      url = "https://d3fxnri0mz3rya.cloudfront.net/antifraud/" + public_key + ".js";
+      return conektaAjax({
         url: url,
         dataType: 'jsonp',
         jsonpCallback: 'conekta_antifraud_config_jsonp',
@@ -3603,16 +3654,16 @@ module.exports = function(val){
       getLanguage: function() {
         return _language;
       },
-      setPublishableKey: function(key) {
+      setPublicKey: function(key) {
         if (typeof key === 'string' && key.match(/^[a-zA-Z0-9_]*$/) && key.length >= 20 && key.length < 30) {
-          publishable_key = key;
-          localstorageSet('_conekta_publishable_key', publishable_key);
+          public_key = key;
+          localstorageSet('_conekta_publishable_key', public_key);
         } else {
           Conekta._helpers.log('Unusable public key: ' + key);
         }
       },
-      getPublishableKey: function() {
-        return publishable_key;
+      getPublicKey: function(key) {
+        return public_key;
       },
       _helpers: {
         finger_printed: false,
@@ -3627,32 +3678,32 @@ module.exports = function(val){
           }
           return keys;
         },
-        parseForm: function(charge_form) {
-          var all_inputs, attribute, attribute_name, attributes, charge, input, inputs, key, last_attribute, line_items, node, parent_node, selects, textareas, val, _k, _l, _len, _len1, _m, _n, _o, _ref1, _ref2, _ref3;
-          charge = {};
-          if (typeof charge_form === 'object') {
-            if (typeof jQuery !== 'undefined' && (charge_form instanceof jQuery || 'jquery' in Object(charge_form))) {
-              charge_form = charge_form.get()[0];
-              if (typeof charge_form !== 'object') {
+        parseForm: function(form_object) {
+          var all_inputs, attribute, attribute_name, attributes, input, inputs, json_object, l, last_attribute, len, len1, m, node, o, parent_node, q, r, ref1, ref2, ref3, selects, textareas, val;
+          json_object = {};
+          if (typeof form_object === 'object') {
+            if (typeof jQuery !== 'undefined' && (form_object instanceof jQuery || 'jquery' in Object(form_object))) {
+              form_object = form_object.get()[0];
+              if (typeof form_object !== 'object') {
                 return {};
               }
             }
-            if (charge_form.nodeType) {
-              textareas = charge_form.getElementsByTagName('textarea');
-              inputs = charge_form.getElementsByTagName('input');
-              selects = charge_form.getElementsByTagName('select');
+            if (form_object.nodeType) {
+              textareas = form_object.getElementsByTagName('textarea');
+              inputs = form_object.getElementsByTagName('input');
+              selects = form_object.getElementsByTagName('select');
               all_inputs = new Array(textareas.length + inputs.length + selects.length);
-              for (i = _k = 0, _ref1 = textareas.length - 1; _k <= _ref1; i = _k += 1) {
+              for (i = l = 0, ref1 = textareas.length - 1; l <= ref1; i = l += 1) {
                 all_inputs[i] = textareas[i];
               }
-              for (i = _l = 0, _ref2 = inputs.length - 1; _l <= _ref2; i = _l += 1) {
+              for (i = m = 0, ref2 = inputs.length - 1; m <= ref2; i = m += 1) {
                 all_inputs[i + textareas.length] = inputs[i];
               }
-              for (i = _m = 0, _ref3 = selects.length - 1; _m <= _ref3; i = _m += 1) {
+              for (i = o = 0, ref3 = selects.length - 1; o <= ref3; i = o += 1) {
                 all_inputs[i + textareas.length + inputs.length] = selects[i];
               }
-              for (_n = 0, _len = all_inputs.length; _n < _len; _n++) {
-                input = all_inputs[_n];
+              for (q = 0, len = all_inputs.length; q < len; q++) {
+                input = all_inputs[q];
                 if (input) {
                   attribute_name = input.getAttribute('data-conekta');
                   if (attribute_name) {
@@ -3663,10 +3714,10 @@ module.exports = function(val){
                     }
                     attributes = attribute_name.replace(/\]/g, '').replace(/\-/g, '_').split(/\[/);
                     parent_node = null;
-                    node = charge;
+                    node = json_object;
                     last_attribute = null;
-                    for (_o = 0, _len1 = attributes.length; _o < _len1; _o++) {
-                      attribute = attributes[_o];
+                    for (r = 0, len1 = attributes.length; r < len1; r++) {
+                      attribute = attributes[r];
                       if (!node[attribute]) {
                         node[attribute] = {};
                       }
@@ -3679,17 +3730,10 @@ module.exports = function(val){
                 }
               }
             } else {
-              charge = charge_form;
-            }
-            if (charge.details && charge.details.line_items && Object.prototype.toString.call(charge.details.line_items) !== '[object Array]' && typeof charge.details.line_items === 'object') {
-              line_items = [];
-              for (key in charge.details.line_items) {
-                line_items.push(charge.details.line_items[key]);
-              }
-              charge.details.line_items = line_items;
+              json_object = form_object;
             }
           }
-          return charge;
+          return json_object;
         },
         getSessionId: function() {
           return session_id;
@@ -3720,9 +3764,9 @@ module.exports = function(val){
             params.url = (params.jsonp_url || params.url) + '/create.js';
             params.data['_Version'] = "0.3.0";
             params.data['_RaiseHtmlError'] = false;
-            params.data['auth_token'] = Conekta.getPublishableKey();
+            params.data['auth_token'] = Conekta.getPublicKey();
             params.data['conekta_client_user_agent'] = '{"agent":"Conekta JavascriptBindings/0.3.0"}';
-            return ajax({
+            return conektaAjax({
               url: base_url + params.url,
               dataType: 'jsonp',
               data: params.data,
@@ -3731,7 +3775,7 @@ module.exports = function(val){
             });
           } else {
             if (typeof (new XMLHttpRequest()).withCredentials !== 'undefined') {
-              return ajax({
+              return conektaAjax({
                 url: base_url + params.url,
                 type: 'POST',
                 dataType: 'json',
@@ -3742,7 +3786,7 @@ module.exports = function(val){
                   'Accept': 'application/vnd.conekta-v0.3.0+json',
                   'Accept-Language': Conekta.getLanguage(),
                   'Conekta-Client-User-Agent': '{"agent":"Conekta JavascriptBindings/0.3.0"}',
-                  'Authorization': 'Basic ' + Base64.encode(Conekta.getPublishableKey() + ':')
+                  'Authorization': 'Basic ' + Base64.encode(Conekta.getPublicKey() + ':')
                 },
                 success: success_callback,
                 error: error_callback
@@ -3764,7 +3808,7 @@ module.exports = function(val){
                   'Accept': 'application/vnd.conekta-v0.3.0+json',
                   'Accept-Language': Conekta.getLanguage(),
                   'Conekta-Client-User-Agent': '{"agent":"Conekta JavascriptBindings/0.3.0"}',
-                  'Authorization': 'Basic ' + Base64.encode(Conekta.getPublishableKey() + ':')
+                  'Authorization': 'Basic ' + Base64.encode(Conekta.getPublicKey() + ':')
                 },
                 data: JSON.stringify(params.data)
               }, success_callback, error_callback);
@@ -3775,61 +3819,62 @@ module.exports = function(val){
           if (typeof console !== 'undefined' && console.log) {
             return console.log(data);
           }
+        },
+        querySelectorAll: function(selectors) {
+          var element, elements, style;
+          if (!document.querySelectorAll) {
+            style = document.createElement('style');
+            elements = [];
+            document.documentElement.firstChild.appendChild(style);
+            document._qsa = [];
+            if (style.styleSheet) {
+              style.styleSheet.cssText = selectors + '{x-qsa:expression(document._qsa && document._qsa.push(this))}';
+            } else {
+              style.style.cssText = selectors + '{x-qsa:expression(document._qsa && document._qsa.push(this))}';
+            }
+            window.scrollBy(0, 0);
+            style.parentNode.removeChild(style);
+            while (document._qsa.length) {
+              element = document._qsa.shift();
+              element.style.removeAttribute('x-qsa');
+              elements.push(element);
+            }
+            document._qsa = null;
+            return elements;
+          } else {
+            return document.querySelectorAll(selectors);
+          }
+        },
+        querySelector: function(selectors) {
+          var elements;
+          if (!document.querySelector) {
+            elements = this.querySelectorAll(selectors);
+            if (elements.length > 0) {
+              return elements[0];
+            } else {
+              return null;
+            }
+          } else {
+            return document.querySelector(selectors);
+          }
         }
       }
     };
+    if (Conekta._helpers.querySelectorAll('script[data-conekta-session-id]').length > 0) {
+      $tag = Conekta._helpers.querySelectorAll('script[data-conekta-session-id]')[0];
+      session_id = $tag.getAttribute('data-conekta-session-id');
+    }
+    if (Conekta._helpers.querySelectorAll('script[data-conekta-public-key]').length > 0) {
+      $tag = Conekta._helpers.querySelectorAll('script[data-conekta-public-key]')[0];
+      window.Conekta.setPublicKey($tag.getAttribute('data-conekta-public-key'));
+    }
   }
 
 }).call(this);
 
 (function() {
-  Conekta.charge = {};
-
-  Conekta.charge.create = function(charge_form, success_callback, failure_callback) {
-    var charge;
-    if (typeof success_callback !== 'function') {
-      success_callback = Conekta._helpers.log;
-    }
-    if (typeof failure_callback !== 'function') {
-      failure_callback = Conekta._helpers.log;
-    }
-    charge = Conekta._helpers.parseForm(charge_form);
-    if (typeof charge === 'object') {
-      if (Conekta._helpers.objectKeys(charge).length > 0) {
-        charge.session_id = Conekta._helpers.getSessionId();
-        if (charge.card && charge.card.address && !(charge.card.address.street1 || charge.card.address.street2 || charge.card.address.street3 || charge.card.address.city || charge.card.address.state || charge.card.address.country || charge.card.address.zip)) {
-          delete charge.card.address;
-        }
-        return Conekta._helpers.xDomainPost({
-          jsonp_url: 'charges',
-          url: 'charges',
-          data: charge,
-          success: success_callback,
-          error: failure_callback
-        });
-      } else {
-        return failure_callback({
-          'object': 'error',
-          'type': 'invalid_request_error',
-          'message': "Supplied parameter 'charge' is usable object but has no values (e.g. amount, description) associated with it",
-          'message_to_purchaser': "The card could not be processed, please try again later"
-        });
-      }
-    } else {
-      return failure_callback({
-        'object': 'error',
-        'type': 'invalid_request_error',
-        'message': "Supplied parameter 'charge' is not a javascript object",
-        'message_to_purchaser': "The card could not be processed, please try again later"
-      });
-    }
-  };
-
-}).call(this);
-
-(function() {
   var accepted_cards, card_types, get_card_type, is_valid_length, is_valid_luhn, parseMonth, parseYear,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   card_types = [
     {
@@ -3876,11 +3921,11 @@ module.exports = function(val){
   ];
 
   is_valid_luhn = function(number) {
-    var digit, n, sum, _i, _len, _ref;
+    var digit, i, len, n, ref, sum;
     sum = 0;
-    _ref = number.split('').reverse();
-    for (n = _i = 0, _len = _ref.length; _i < _len; n = ++_i) {
-      digit = _ref[n];
+    ref = number.split('').reverse();
+    for (n = i = 0, len = ref.length; i < len; n = ++i) {
+      digit = ref[n];
       digit = +digit;
       if (n % 2) {
         digit *= 2;
@@ -3897,27 +3942,27 @@ module.exports = function(val){
   };
 
   is_valid_length = function(number, card_type) {
-    var _ref;
-    return _ref = number.length, __indexOf.call(card_type.valid_length, _ref) >= 0;
+    var ref;
+    return ref = number.length, indexOf.call(card_type.valid_length, ref) >= 0;
   };
 
   accepted_cards = ['visa', 'mastercard', 'maestro', 'visa_electron', 'amex', 'laser', 'diners_club_carte_blanche', 'diners_club_international', 'discover', 'jcb'];
 
   get_card_type = function(number) {
-    var card, card_type, _i, _len, _ref;
-    _ref = (function() {
-      var _j, _len, _ref, _results;
-      _results = [];
-      for (_j = 0, _len = card_types.length; _j < _len; _j++) {
-        card = card_types[_j];
-        if (_ref = card.name, __indexOf.call(accepted_cards, _ref) >= 0) {
-          _results.push(card);
+    var card, card_type, i, len, ref;
+    ref = (function() {
+      var j, len, ref, results;
+      results = [];
+      for (j = 0, len = card_types.length; j < len; j++) {
+        card = card_types[j];
+        if (ref = card.name, indexOf.call(accepted_cards, ref) >= 0) {
+          results.push(card);
         }
       }
-      return _results;
+      return results;
     })();
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      card_type = _ref[_i];
+    for (i = 0, len = ref.length; i < len; i++) {
+      card_type = ref[i];
       if (number.match(card_type.pattern)) {
         return card_type;
       }
@@ -4020,9 +4065,9 @@ module.exports = function(val){
 }).call(this);
 
 (function() {
-  Conekta.token = {};
+  Conekta.Token = {};
 
-  Conekta.token.create = function(token_form, success_callback, failure_callback) {
+  Conekta.Token.create = function(token_form, success_callback, failure_callback) {
     var token;
     if (typeof success_callback !== 'function') {
       success_callback = Conekta._helpers.log;

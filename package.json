@@ -1,25 +1,25 @@
 {
   "name": "conekta.js",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "author": {
     "name": "Conekta",
-    "url": "http://www.conekta.mx"
+    "url": "https://conekta.io"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/conekta/conekta.js.git"
+    "url": "https://github.com/conekta/conekta.js"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/conekta/conekta.js/blob/master/LICENSE-MIT.txt"
-    }
-  ],
+  "license": "MIT",
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-coffee": "~0.7.0",
-    "grunt-contrib-uglify": "~0.2.2",
-    "grunt-contrib-copy": "~0.4.1",
-    "grunt-contrib-concat": "~0.3.0"
+    "grunt": "^0.4.5",
+    "grunt-contrib-coffee": "^0.13.0",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-copy": "^0.8.2",
+    "grunt-contrib-jasmine": "^1.0.0",
+    "grunt-contrib-uglify": "^0.10.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "jasmine": "*",
+    "jquery": "*",
+    "jasmine-jquery": "*"
   }
 }

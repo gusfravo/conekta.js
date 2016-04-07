@@ -3,9 +3,6 @@
 <head>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
   <title>Conekta - Primero Cargo</title>
- 
-  <!-- Incluir jQuery -->
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
   <!-- Incluir Conekta.js -->
   <script 
@@ -24,7 +21,7 @@
 
         // Insert the token_id into the form
         $form.append($('<input type="hidden" name="card_token" />').val(card_token));
-
+        console.log("success");
         // Submit the form data to the server
         //$form.get(0).submit();
       };
@@ -32,6 +29,7 @@
       var conektaErrorResponseHandler = function(response) {
         var $form = $('#payment-form');
 
+        console.log("error");
         // Show the errors on the form
         $form.find('.payment-errors').text(response.message);
         $form.find('button').prop('disabled', false);
@@ -43,7 +41,7 @@
         // Disable the submit button to prevent repeated clicks
         $form.find('button').prop('disabled', true);
 
-        Conekta.Token.create($('#payment-form'), conektaSuccessResponseHandler, conektaErrorResponseHandler);
+        Conekta.Token.create($('#payment-form'));
 
         // Prevent the form from submitting with the default action
         return false;

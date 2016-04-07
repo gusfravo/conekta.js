@@ -1,6 +1,7 @@
-Conekta.token = {}
+Conekta.Token = {}
 
-Conekta.token.create = (token_form, success_callback, failure_callback)->
+Conekta.Token.create = (token_form, success_callback, failure_callback)->
+
   if typeof success_callback != 'function'
     success_callback = Conekta._helpers.log
 
