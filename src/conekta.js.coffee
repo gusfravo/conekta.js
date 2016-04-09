@@ -532,3 +532,7 @@ if !window.Conekta
   if Conekta._helpers.querySelectorAll('script[data-conekta-public-key]').length > 0
     $tag = Conekta._helpers.querySelectorAll('script[data-conekta-public-key]')[0];
     window.Conekta.setPublicKey($tag.getAttribute('data-conekta-public-key'));
+
+Conekta.setPublishableKey = Conekta.setPublicKey
+Conekta.getPublishableKey = Conekta.getPublicKey
+

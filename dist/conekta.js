@@ -759,6 +759,10 @@ timeout:0},conektaAjax.get=function(a,b){return conektaAjax({url:a,success:b})},
     }
   }
 
+  Conekta.setPublishableKey = Conekta.setPublicKey;
+
+  Conekta.getPublishableKey = Conekta.getPublicKey;
+
 }).call(this);
 
 (function() {
