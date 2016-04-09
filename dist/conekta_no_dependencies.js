@@ -1,3 +1,9 @@
+/* 
+ * conekta.js v1.0.0
+ * Conekta 2013
+ * https://github.com/conekta/conekta.js/blob/master/LICENSE.txt
+ */
+
 (function() {
   var $tag, Base64, _language, antifraud_config, base_url, fingerprint, getAntifraudConfig, getCartCallback, i, j, k, kount_merchant_id, localstorageGet, localstorageSet, originalGetCart, originalOnCartUpdated, originalOnItemAdded, public_key, random_index, random_value_array, ref, send_beacon, session_id, useable_characters;
 
