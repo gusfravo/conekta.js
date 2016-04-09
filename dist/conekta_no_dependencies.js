@@ -572,10 +572,6 @@
     }
   }
 
-  Conekta.setPublishableKey = Conekta.setPublicKey;
-
-  Conekta.getPublishableKey = Conekta.getPublicKey;
-
 }).call(this);
 
 (function() {

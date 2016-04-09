@@ -6,6 +6,7 @@
 
 # Grunt Dependencies
 node_modules
+.grunt
 
 # swap files
 *~
