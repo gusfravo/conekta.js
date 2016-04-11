@@ -118,6 +118,25 @@ Conekta.Token.create($('#card-form'), successHandler, errorHandler);
 
 Please see https://www.conekta.io/docs/api for up-to-date documentation.
 
+## Library Development and Testing
+
+If you wish to make a pull request you can build and test your changes:
+
+```shell
+#build
+grunt
+
+#test
+npm test
+```
+
+To expedite the process you can use a docker with the library and environment preloaded:
+
+```shell
+docker pull conekta/conekta.js
+
+docker run -ti conekta/conekta.js /bin/bash --login
+```
 ## License
 
 Developed by [Conekta](https://www.conekta.io). Available with [MIT License](LICENSE).
