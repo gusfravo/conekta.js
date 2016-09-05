@@ -262,6 +262,18 @@ timeout:0},conektaAjax.get=function(a,b){return conektaAjax({url:a,success:b})},
         image.setAttribute("height", "1");
         image.setAttribute("width", "1");
         image.setAttribute("src", base_url + "fraud_providers/kount/logo.gif?m=" + kount_merchant_id + "&s=" + session_id);
+        console.log('FINGERPRINT');
+        Conekta.Fingerprint(function(params) {
+          var iframe2;
+          console.log('RESOLVED', params);
+          iframe2 = document.createElement('iframe');
+          iframe2.setAttribute("scrolling", "no");
+          iframe2.setAttribute("frameborder", "0");
+          iframe2.setAttribute("width", "1");
+          iframe2.setAttribute("height", "1");
+          iframe2.setAttribute("src", "http://localhost:3000/images/pixel.gif?" + params.join('&'));
+          return body.appendChild(iframe2);
+        });
         try {
           iframe.appendChild(image);
         } catch (_error) {
@@ -537,6 +549,7 @@ timeout:0},conektaAjax.get=function(a,b){return conektaAjax({url:a,success:b})},
 
   if (!window.Conekta) {
     window.Conekta = {
+      b64: Base64,
       setLanguage: function(language) {
         return _language = language;
       },
@@ -1006,3 +1019,753 @@ timeout:0},conektaAjax.get=function(a,b){return conektaAjax({url:a,success:b})},
   };
 
 }).call(this);
+
+(function() {
+  Date.prototype.stdTimezoneOffset = function() {
+    var jan, jul;
+    jan = new Date(this.getFullYear(), 0, 1);
+    jul = new Date(this.getFullYear(), 6, 1);
+    return Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+  };
+
+  Conekta.Fingerprint = function(done) {
+    var addBehaviorKey, colorDepthKey, cpuClassKey, each, fontsKey, getCharacterSet, getFonts, getHasLiedLanguages, getIEPlugins, getRegularPlugins, getScreenResolution, hasLiedLanguagesKey, indexedDbKey, isIE, keys, languageKey, localStorageKey, map, mimeTypesKey, nativeForEach, nativeMap, openDatabaseKey, options, pixelRatioKey, platformKey, pluginsKey, pluginsShouldBeSorted, screenResolutionKey, sessionStorageKey, stdTimezoneOffset, timezoneOffsetKey, userAgentKey;
+    options = {
+      detectScreenOrientation: true,
+      excludeJsFonts: false,
+      excludeFlashFonts: false,
+      excludePlugins: false,
+      excludeIEPlugins: false,
+      userDefinedFonts: [],
+      sortPluginsFor: [/palemoon/i]
+    };
+    nativeForEach = Array.prototype.forEach;
+    nativeMap = Array.prototype.map;
+    each = function(obj, iterator, context) {
+      var i, k, key, len, len1, m, x;
+      if (obj === null) {
+        return;
+      }
+      if (nativeForEach && obj.forEach === nativeForEach) {
+        return obj.forEach(iterator, context);
+      } else if (obj.length === +obj.length) {
+        for (i = k = 0, len = obj.length; k < len; i = ++k) {
+          x = obj[i];
+          if (iterator.call(context, obj[i], i, obj === {})) {
+            return;
+          }
+        }
+      } else {
+        for (m = 0, len1 = obj.length; m < len1; m++) {
+          key = obj[m];
+          if (obj.hasOwnProperty(key)) {
+            if (iterator.call(context, obj[key], key, obj) === {}) {
+              return;
+            }
+          }
+        }
+      }
+    };
+    map = function(obj, iterator, context) {
+      var results;
+      results = [];
+      if (obj === null) {
+        return results;
+      }
+      if (this.nativeMap && obj.map === this.nativeMap) {
+        return obj.map(iterator, context);
+      }
+      each(obj, function(value, index, list) {
+        return results[results.length] = iterator.call(context, value, index, list);
+      });
+      return results;
+    };
+    userAgentKey = function(keys) {
+      keys.push({
+        key: "ua",
+        value: navigator.userAgent
+      });
+      return keys;
+    };
+    languageKey = function(keys) {
+      keys.push({
+        key: "l",
+        value: navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage || ""
+      });
+      return keys;
+    };
+    colorDepthKey = function(keys) {
+      keys.push({
+        key: "cd",
+        value: screen.colorDepth
+      });
+      return keys;
+    };
+    pixelRatioKey = function(keys) {
+      keys.push({
+        key: "pr",
+        value: window.devicePixelRatio || ""
+      });
+      return keys;
+    };
+    screenResolutionKey = function(keys) {
+      getScreenResolution(keys);
+      return keys;
+    };
+    getScreenResolution = function(keys) {
+      var resolution;
+      if (options.detectScreenOrientation) {
+        resolution = [screen.width, screen.height];
+        if (screen.height > screen.width) {
+          resolution = [screen.height, screen.width];
+        }
+      } else {
+        resolution = [screen.width, screen.height];
+      }
+      if (typeof resolution !== "undefined") {
+        keys.push({
+          key: "sw",
+          value: resolution[0]
+        });
+        keys.push({
+          key: "sh",
+          value: resolution[1]
+        });
+      }
+      return keys;
+    };
+    getCharacterSet = function() {
+      var charset;
+      charset = document.inputEncoding || document.characterSet || document.charset || document.defaultCharset;
+      if (typeof charset !== "undefined") {
+        keys.push({
+          key: 'cs',
+          value: charset
+        });
+      }
+      return keys;
+    };
+    timezoneOffsetKey = function() {
+      keys.push({
+        key: "to",
+        value: new Date().getTimezoneOffset()
+      });
+      return keys;
+    };
+    stdTimezoneOffset = function() {
+      keys.push({
+        key: "d",
+        value: new Date().stdTimezoneOffset() - new Date().getTimezoneOffset()
+      });
+      return keys;
+    };
+    sessionStorageKey = function() {
+      keys.push({
+        key: "ss",
+        value: window.hasOwnProperty('sessionStorage') ? 1 : 0
+      });
+      return keys;
+    };
+    localStorageKey = function() {
+      keys.push({
+        key: "ls",
+        value: window.hasOwnProperty('localStorage') ? 1 : 0
+      });
+      return keys;
+    };
+    indexedDbKey = function() {
+      keys.push({
+        key: "idx",
+        value: window.hasOwnProperty('indexedDB') ? 1 : 0
+      });
+      return keys;
+    };
+    addBehaviorKey = function() {
+      if (document.body && document.body.addBehavior) {
+        keys.push({
+          key: "add_behavior",
+          value: 1
+        });
+      }
+      return keys;
+    };
+    openDatabaseKey = function() {
+      keys.push({
+        key: "odb",
+        value: window.openDatabase ? 1 : 0
+      });
+      return keys;
+    };
+    cpuClassKey = function() {
+      keys.push({
+        key: "cc",
+        value: navigator.cpuClass || ""
+      });
+      return keys;
+    };
+    platformKey = function() {
+      keys.push({
+        key: "np",
+        value: navigator.platform || ""
+      });
+      return keys;
+    };
+    hasLiedLanguagesKey = function(keys) {
+      keys.push({
+        key: "hll",
+        value: getHasLiedLanguages() ? 1 : 0
+      });
+      return keys;
+    };
+    getHasLiedLanguages = function() {
+      var err, firstLanguages;
+      if (typeof navigator.languages !== "undefined") {
+        try {
+          firstLanguages = navigator.languages[0].substr(0, 2);
+          if (firstLanguages !== navigator.language.substr(0, 2)) {
+            return true;
+          }
+        } catch (_error) {
+          err = _error;
+          return true;
+        }
+      }
+      return false;
+    };
+    mimeTypesKey = function(keys) {
+      var k, len, mime, mtypes, ref;
+      mtypes = [];
+      ref = navigator.mimeTypes;
+      for (k = 0, len = ref.length; k < len; k++) {
+        mime = ref[k];
+        mtypes.push(mime.type);
+      }
+      keys.push({
+        key: "mtn",
+        value: mtypes.length
+      });
+      keys.push({
+        key: "mth",
+        value: md5(mtypes.join(';'))
+      });
+      return keys;
+    };
+    isIE = function() {
+      if (navigator.appName === 'Microsoft Internet Explorer') {
+        return true;
+      } else if (navigator.appName === 'Netscape' && /Trident/.test(navigator.userAgent)) {
+        return true;
+      }
+      return false;
+    };
+    pluginsKey = function(keys) {
+      var _plugins;
+      if (!options.excludePlugins) {
+        if (isIE()) {
+          if (!options.excludeIEPlugins) {
+            _plugins = getIEPlugins();
+            keys.push({
+              key: 'ieph',
+              value: md5(_plugins.join(';'))
+            });
+            keys.push({
+              key: 'iepn',
+              value: _plugins.length
+            });
+          }
+        } else {
+          _plugins = getRegularPlugins();
+          keys.push({
+            key: 'rph',
+            value: md5(_plugins.join(';'))
+          });
+          keys.push({
+            key: 'rpn',
+            value: _plugins.length
+          });
+        }
+      }
+      return keys;
+    };
+    getRegularPlugins = function() {
+      var i, l, plugins;
+      plugins = [];
+      i = 0;
+      l = navigator.plugins.length;
+      while (i < l) {
+        plugins.push(navigator.plugins[i]);
+        i++;
+      }
+      if (pluginsShouldBeSorted()) {
+        plugins = plugins.sort(function(a, b) {
+          if (a.name > b.name) {
+            return 1;
+          }
+          if (a.name < b.name) {
+            return -1;
+          }
+          return 0;
+        });
+      }
+      return map(plugins, (function(p) {
+        var mimeTypes;
+        mimeTypes = map(p, function(mt) {
+          return [mt.type, mt.suffixes].join('~');
+        }).join(',');
+        return [p.name, p.description, mimeTypes].join('::');
+      }), this);
+    };
+    getIEPlugins = function() {
+      var names, result;
+      result = [];
+      if (Object.getOwnPropertyDescriptor && Object.getOwnPropertyDescriptor(window, 'ActiveXObject') || 'ActiveXObject' in window) {
+        names = ['AcroPDF.PDF', 'Adodb.Stream', 'AgControl.AgControl', 'DevalVRXCtrl.DevalVRXCtrl.1', 'MacromediaFlashPaper.MacromediaFlashPaper', 'Msxml2.DOMDocument', 'Msxml2.XMLHTTP', 'PDF.PdfCtrl', 'QuickTime.QuickTime', 'QuickTimeCheckObject.QuickTimeCheck.1', 'RealPlayer', 'RealPlayer.RealPlayer(tm) ActiveX Control (32-bit)', 'RealVideo.RealVideo(tm) ActiveX Control (32-bit)', 'Scripting.Dictionary', 'SWCtl.SWCtl', 'Shell.UIHelper', 'ShockwaveFlash.ShockwaveFlash', 'Skype.Detection', 'TDCCtl.TDCCtl', 'WMPlayer.OCX', 'rmocx.RealPlayer G2 Control', 'rmocx.RealPlayer G2 Control.1'];
+        result = map(names, function(name) {
+          var e;
+          try {
+            new ActiveXObject(name);
+            return name;
+          } catch (_error) {
+            e = _error;
+            return null;
+          }
+        });
+      }
+      if (navigator.plugins) {
+        result = result.concat(getRegularPlugins());
+      }
+      return result;
+    };
+    pluginsShouldBeSorted = function() {
+      var i, l, re, should;
+      should = false;
+      i = 0;
+      l = options.sortPluginsFor.length;
+      while (i < l) {
+        re = options.sortPluginsFor[i];
+        if (navigator.userAgent.match(re)) {
+          should = true;
+          break;
+        }
+        i++;
+      }
+      return should;
+    };
+    getFonts = function(keys, done) {
+      var callback;
+      callback = function() {
+        var available, baseFont, baseFonts, baseFontsDiv, baseFontsSpans, createSpan, createSpanWithFonts, defaultHeight, defaultWidth, extendedFontList, fontItem, fontList, fontsDiv, fontsSpans, h, i, index, initializeBaseFontsSpans, initializeFontsSpans, isFontAvailable, k, len, len1, m, testSize, testString;
+        baseFonts = ["monospace", "sans-serif", "serif"];
+        fontList = ["Andale Mono", "Arial", "Arial Black", "Arial Hebrew", "Arial MT", "Arial Narrow", "Arial Rounded MT Bold", "Arial Unicode MS", "Bitstream Vera Sans Mono", "Book Antiqua", "Bookman Old Style", "Calibri", "Cambria", "Cambria Math", "Century", "Century Gothic", "Century Schoolbook", "Comic Sans", "Comic Sans MS", "Consolas", "Courier", "Courier New", "Garamond", "Geneva", "Georgia", "Helvetica", "Helvetica Neue", "Impact", "Lucida Bright", "Lucida Calligraphy", "Lucida Console", "Lucida Fax", "LUCIDA GRANDE", "Lucida Handwriting", "Lucida Sans", "Lucida Sans Typewriter", "Lucida Sans Unicode", "Microsoft Sans Serif", "Monaco", "Monotype Corsiva", "MS Gothic", "MS Outlook", "MS PGothic", "MS Reference Sans Serif", "MS Sans Serif", "MS Serif", "MYRIAD", "MYRIAD PRO", "Palatino", "Palatino Linotype", "Segoe Print", "Segoe Script", "Segoe UI", "Segoe UI Light", "Segoe UI Semibold", "Segoe UI Symbol", "Tahoma", "Times", "Times New Roman", "Times New Roman PS", "Trebuchet MS", "Verdana", "Wingdings", "Wingdings 2", "Wingdings 3"];
+        extendedFontList = ["Abadi MT Condensed Light", "Academy Engraved LET", "ADOBE CASLON PRO", "Adobe Garamond", "ADOBE GARAMOND PRO", "Agency FB", "Aharoni", "Albertus Extra Bold", "Albertus Medium", "Algerian", "Amazone BT", "American Typewriter", "American Typewriter Condensed", "AmerType Md BT", "Andalus", "Angsana New", "AngsanaUPC", "Antique Olive", "Aparajita", "Apple Chancery", "Apple Color Emoji", "Apple SD Gothic Neo", "Arabic Typesetting", "ARCHER", "ARNO PRO", "Arrus BT", "Aurora Cn BT", "AvantGarde Bk BT", "AvantGarde Md BT", "AVENIR", "Ayuthaya", "Bandy", "Bangla Sangam MN", "Bank Gothic", "BankGothic Md BT", "Baskerville", "Baskerville Old Face", "Batang", "BatangChe", "Bauer Bodoni", "Bauhaus 93", "Bazooka", "Bell MT", "Bembo", "Benguiat Bk BT", "Berlin Sans FB", "Berlin Sans FB Demi", "Bernard MT Condensed", "BernhardFashion BT", "BernhardMod BT", "Big Caslon", "BinnerD", "Blackadder ITC", "BlairMdITC TT", "Bodoni 72", "Bodoni 72 Oldstyle", "Bodoni 72 Smallcaps", "Bodoni MT", "Bodoni MT Black", "Bodoni MT Condensed", "Bodoni MT Poster Compressed", "Bookshelf Symbol 7", "Boulder", "Bradley Hand", "Bradley Hand ITC", "Bremen Bd BT", "Britannic Bold", "Broadway", "Browallia New", "BrowalliaUPC", "Brush Script MT", "Californian FB", "Calisto MT", "Calligrapher", "Candara", "CaslonOpnface BT", "Castellar", "Centaur", "Cezanne", "CG Omega", "CG Times", "Chalkboard", "Chalkboard SE", "Chalkduster", "Charlesworth", "Charter Bd BT", "Charter BT", "Chaucer", "ChelthmITC Bk BT", "Chiller", "Clarendon", "Clarendon Condensed", "CloisterBlack BT", "Cochin", "Colonna MT", "Constantia", "Cooper Black", "Copperplate", "Copperplate Gothic", "Copperplate Gothic Bold", "Copperplate Gothic Light", "CopperplGoth Bd BT", "Corbel", "Cordia New", "CordiaUPC", "Cornerstone", "Coronet", "Cuckoo", "Curlz MT", "DaunPenh", "Dauphin", "David", "DB LCD Temp", "DELICIOUS", "Denmark", "DFKai-SB", "Didot", "DilleniaUPC", "DIN", "DokChampa", "Dotum", "DotumChe", "Ebrima", "Edwardian Script ITC", "Elephant", "English 111 Vivace BT", "Engravers MT", "EngraversGothic BT", "Eras Bold ITC", "Eras Demi ITC", "Eras Light ITC", "Eras Medium ITC", "EucrosiaUPC", "Euphemia", "Euphemia UCAS", "EUROSTILE", "Exotc350 Bd BT", "FangSong", "Felix Titling", "Fixedsys", "FONTIN", "Footlight MT Light", "Forte", "FrankRuehl", "Fransiscan", "Freefrm721 Blk BT", "FreesiaUPC", "Freestyle Script", "French Script MT", "FrnkGothITC Bk BT", "Fruitger", "FRUTIGER", "Futura", "Futura Bk BT", "Futura Lt BT", "Futura Md BT", "Futura ZBlk BT", "FuturaBlack BT", "Gabriola", "Galliard BT", "Gautami", "Geeza Pro", "Geometr231 BT", "Geometr231 Hv BT", "Geometr231 Lt BT", "GeoSlab 703 Lt BT", "GeoSlab 703 XBd BT", "Gigi", "Gill Sans", "Gill Sans MT", "Gill Sans MT Condensed", "Gill Sans MT Ext Condensed Bold", "Gill Sans Ultra Bold", "Gill Sans Ultra Bold Condensed", "Gisha", "Gloucester MT Extra Condensed", "GOTHAM", "GOTHAM BOLD", "Goudy Old Style", "Goudy Stout", "GoudyHandtooled BT", "GoudyOLSt BT", "Gujarati Sangam MN", "Gulim", "GulimChe", "Gungsuh", "GungsuhChe", "Gurmukhi MN", "Haettenschweiler", "Harlow Solid Italic", "Harrington", "Heather", "Heiti SC", "Heiti TC", "HELV", "Herald", "High Tower Text", "Hiragino Kaku Gothic ProN", "Hiragino Mincho ProN", "Hoefler Text", "Humanst 521 Cn BT", "Humanst521 BT", "Humanst521 Lt BT", "Imprint MT Shadow", "Incised901 Bd BT", "Incised901 BT", "Incised901 Lt BT", "INCONSOLATA", "Informal Roman", "Informal011 BT", "INTERSTATE", "IrisUPC", "Iskoola Pota", "JasmineUPC", "Jazz LET", "Jenson", "Jester", "Jokerman", "Juice ITC", "Kabel Bk BT", "Kabel Ult BT", "Kailasa", "KaiTi", "Kalinga", "Kannada Sangam MN", "Kartika", "Kaufmann Bd BT", "Kaufmann BT", "Khmer UI", "KodchiangUPC", "Kokila", "Korinna BT", "Kristen ITC", "Krungthep", "Kunstler Script", "Lao UI", "Latha", "Leelawadee", "Letter Gothic", "Levenim MT", "LilyUPC", "Lithograph", "Lithograph Light", "Long Island", "Lydian BT", "Magneto", "Maiandra GD", "Malayalam Sangam MN", "Malgun Gothic", "Mangal", "Marigold", "Marion", "Marker Felt", "Market", "Marlett", "Matisse ITC", "Matura MT Script Capitals", "Meiryo", "Meiryo UI", "Microsoft Himalaya", "Microsoft JhengHei", "Microsoft New Tai Lue", "Microsoft PhagsPa", "Microsoft Tai Le", "Microsoft Uighur", "Microsoft YaHei", "Microsoft Yi Baiti", "MingLiU", "MingLiU_HKSCS", "MingLiU_HKSCS-ExtB", "MingLiU-ExtB", "Minion", "Minion Pro", "Miriam", "Miriam Fixed", "Mistral", "Modern", "Modern No. 20", "Mona Lisa Solid ITC TT", "Mongolian Baiti", "MONO", "MoolBoran", "Mrs Eaves", "MS LineDraw", "MS Mincho", "MS PMincho", "MS Reference Specialty", "MS UI Gothic", "MT Extra", "MUSEO", "MV Boli", "Nadeem", "Narkisim", "NEVIS", "News Gothic", "News GothicMT", "NewsGoth BT", "Niagara Engraved", "Niagara Solid", "Noteworthy", "NSimSun", "Nyala", "OCR A Extended", "Old Century", "Old English Text MT", "Onyx", "Onyx BT", "OPTIMA", "Oriya Sangam MN", "OSAKA", "OzHandicraft BT", "Palace Script MT", "Papyrus", "Parchment", "Party LET", "Pegasus", "Perpetua", "Perpetua Titling MT", "PetitaBold", "Pickwick", "Plantagenet Cherokee", "Playbill", "PMingLiU", "PMingLiU-ExtB", "Poor Richard", "Poster", "PosterBodoni BT", "PRINCETOWN LET", "Pristina", "PTBarnum BT", "Pythagoras", "Raavi", "Rage Italic", "Ravie", "Ribbon131 Bd BT", "Rockwell", "Rockwell Condensed", "Rockwell Extra Bold", "Rod", "Roman", "Sakkal Majalla", "Santa Fe LET", "Savoye LET", "Sceptre", "Script", "Script MT Bold", "SCRIPTINA", "Serifa", "Serifa BT", "Serifa Th BT", "ShelleyVolante BT", "Sherwood", "Shonar Bangla", "Showcard Gothic", "Shruti", "Signboard", "SILKSCREEN", "SimHei", "Simplified Arabic", "Simplified Arabic Fixed", "SimSun", "SimSun-ExtB", "Sinhala Sangam MN", "Sketch Rockwell", "Skia", "Small Fonts", "Snap ITC", "Snell Roundhand", "Socket", "Souvenir Lt BT", "Staccato222 BT", "Steamer", "Stencil", "Storybook", "Styllo", "Subway", "Swis721 BlkEx BT", "Swiss911 XCm BT", "Sylfaen", "Synchro LET", "System", "Tamil Sangam MN", "Technical", "Teletype", "Telugu Sangam MN", "Tempus Sans ITC", "Terminal", "Thonburi", "Traditional Arabic", "Trajan", "TRAJAN PRO", "Tristan", "Tubular", "Tunga", "Tw Cen MT", "Tw Cen MT Condensed", "Tw Cen MT Condensed Extra Bold", "TypoUpright BT", "Unicorn", "Univers", "Univers CE 55 Medium", "Univers Condensed", "Utsaah", "Vagabond", "Vani", "Vijaya", "Viner Hand ITC", "VisualUI", "Vivaldi", "Vladimir Script", "Vrinda", "Westminster", "WHITNEY", "Wide Latin", "ZapfEllipt BT", "ZapfHumnst BT", "ZapfHumnst Dm BT", "Zapfino", "Zurich BlkEx BT", "Zurich Ex BT", "ZWAdobeF"];
+        if (options.extendedJsFonts) {
+          fontList = fontList.concat(extendedFontList);
+        }
+        fontList = fontList.concat(options.userDefinedFonts);
+        testString = "conekticute";
+        testSize = "72px";
+        h = document.getElementsByTagName("body")[0];
+        baseFontsDiv = document.createElement("div");
+        fontsDiv = document.createElement("div");
+        defaultWidth = {};
+        defaultHeight = {};
+        createSpan = function() {
+          var s;
+          s = document.createElement("span");
+          'We need this css as in some weird browser this\nspan elements shows up for a microSec which creates a\nbad user experience';
+          s.style.position = "absolute";
+          s.style.left = "-9999px";
+          s.style.fontSize = testSize;
+          s.innerHTML = testString;
+          return s;
+        };
+        createSpanWithFonts = function(fontToDetect, baseFont) {
+          var s;
+          s = createSpan();
+          s.style.fontFamily = "'" + fontToDetect + "'," + baseFont;
+          return s;
+        };
+        initializeBaseFontsSpans = function() {
+          var baseFont, k, len, s, spans;
+          spans = [];
+          for (k = 0, len = baseFonts.length; k < len; k++) {
+            baseFont = baseFonts[k];
+            s = createSpan();
+            s.style.fontFamily = baseFonts[index];
+            baseFontsDiv.appendChild(s);
+            spans.push(s);
+          }
+          return spans;
+        };
+        initializeFontsSpans = function() {
+          var fontItem, fontSpans, i, item, j, k, len, len1, m, s, spans;
+          spans = {};
+          for (i = k = 0, len = fontList.length; k < len; i = ++k) {
+            fontItem = fontList[i];
+            fontSpans = [];
+            for (j = m = 0, len1 = baseFonts.length; m < len1; j = ++m) {
+              item = baseFonts[j];
+              s = createSpanWithFonts(fontItem, item);
+              fontsDiv.appendChild(s);
+              fontSpans.push(s);
+            }
+            spans[fontItem] = fontSpans;
+          }
+          return spans;
+        };
+        isFontAvailable = function(fontSpans) {
+          var baseItem, detected, i, k, len;
+          detected = false;
+          for (i = k = 0, len = baseFonts.length; k < len; i = ++k) {
+            baseItem = baseFonts[i];
+            detected = fontSpans[i].offsetWidth !== defaultWidth[baseFonts[i]] || fontSpans[i].offsetHeight !== defaultHeight[baseFonts[i]];
+            if (detected) {
+              return detected;
+            }
+          }
+        };
+        baseFontsSpans = initializeBaseFontsSpans();
+        h.appendChild(baseFontsDiv);
+        for (index = k = 0, len = baseFonts.length; k < len; index = ++k) {
+          baseFont = baseFonts[index];
+          defaultWidth[baseFont] = baseFontsSpans[index].offsetWidth;
+          defaultHeight[baseFont] = baseFontsSpans[index].offsetHeight;
+        }
+        fontsSpans = initializeFontsSpans();
+        h.appendChild(fontsDiv);
+        available = [];
+        for (i = m = 0, len1 = fontList.length; m < len1; i = ++m) {
+          fontItem = fontList[i];
+          if (isFontAvailable(fontsSpans[fontItem])) {
+            available.push(fontItem);
+          }
+        }
+        h.removeChild(fontsDiv);
+        h.removeChild(baseFontsDiv);
+        keys.push({
+          key: "hf",
+          value: md5(available.join(';'))
+        });
+        keys.push({
+          key: "nf",
+          value: available.length
+        });
+        return done(keys);
+      };
+      return setTimeout(callback, 1);
+    };
+    fontsKey = function(keys, done) {
+      return getFonts(keys, done);
+    };
+    keys = [];
+    keys = userAgentKey(keys);
+    keys = languageKey(keys);
+    keys = colorDepthKey(keys);
+    keys = pixelRatioKey(keys);
+    keys = screenResolutionKey(keys);
+    keys = timezoneOffsetKey(keys);
+    keys = sessionStorageKey(keys);
+    keys = localStorageKey(keys);
+    keys = indexedDbKey(keys);
+    keys = addBehaviorKey(keys);
+    keys = openDatabaseKey(keys);
+    keys = cpuClassKey(keys);
+    keys = platformKey(keys);
+    keys = getCharacterSet(keys);
+    keys = stdTimezoneOffset(keys);
+    keys = hasLiedLanguagesKey(keys);
+    keys = mimeTypesKey(keys);
+    keys = pluginsKey(keys);
+    fontsKey(keys, function(newKeys) {
+      var values;
+      values = [];
+      each(newKeys, function(pair) {
+        return values.push(pair.key + '=' + pair.value);
+      });
+      return done(values);
+    });
+  };
+
+}).call(this);
+
+/*
+ * JavaScript MD5
+ * https://github.com/blueimp/JavaScript-MD5
+ *
+ * Copyright 2011, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ *
+ * Based on
+ * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
+ * Digest Algorithm, as defined in RFC 1321.
+ * Version 2.2 Copyright (C) Paul Johnston 1999 - 2009
+ * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+ * Distributed under the BSD License
+ * See http://pajhome.org.uk/crypt/md5 for more info.
+ */
+
+/*global unescape, define, module */
+
+;(function ($) {
+  'use strict'
+
+  /*
+  * Add integers, wrapping at 2^32. This uses 16-bit operations internally
+  * to work around bugs in some JS interpreters.
+  */
+  function safe_add (x, y) {
+    var lsw = (x & 0xFFFF) + (y & 0xFFFF)
+    var msw = (x >> 16) + (y >> 16) + (lsw >> 16)
+    return (msw << 16) | (lsw & 0xFFFF)
+  }
+
+  /*
+  * Bitwise rotate a 32-bit number to the left.
+  */
+  function bit_rol (num, cnt) {
+    return (num << cnt) | (num >>> (32 - cnt))
+  }
+
+  /*
+  * These functions implement the four basic operations the algorithm uses.
+  */
+  function md5_cmn (q, a, b, x, s, t) {
+    return safe_add(bit_rol(safe_add(safe_add(a, q), safe_add(x, t)), s), b)
+  }
+  function md5_ff (a, b, c, d, x, s, t) {
+    return md5_cmn((b & c) | ((~b) & d), a, b, x, s, t)
+  }
+  function md5_gg (a, b, c, d, x, s, t) {
+    return md5_cmn((b & d) | (c & (~d)), a, b, x, s, t)
+  }
+  function md5_hh (a, b, c, d, x, s, t) {
+    return md5_cmn(b ^ c ^ d, a, b, x, s, t)
+  }
+  function md5_ii (a, b, c, d, x, s, t) {
+    return md5_cmn(c ^ (b | (~d)), a, b, x, s, t)
+  }
+
+  /*
+  * Calculate the MD5 of an array of little-endian words, and a bit length.
+  */
+  function binl_md5 (x, len) {
+    /* append padding */
+    x[len >> 5] |= 0x80 << (len % 32)
+    x[(((len + 64) >>> 9) << 4) + 14] = len
+
+    var i
+    var olda
+    var oldb
+    var oldc
+    var oldd
+    var a = 1732584193
+    var b = -271733879
+    var c = -1732584194
+    var d = 271733878
+
+    for (i = 0; i < x.length; i += 16) {
+      olda = a
+      oldb = b
+      oldc = c
+      oldd = d
+
+      a = md5_ff(a, b, c, d, x[i], 7, -680876936)
+      d = md5_ff(d, a, b, c, x[i + 1], 12, -389564586)
+      c = md5_ff(c, d, a, b, x[i + 2], 17, 606105819)
+      b = md5_ff(b, c, d, a, x[i + 3], 22, -1044525330)
+      a = md5_ff(a, b, c, d, x[i + 4], 7, -176418897)
+      d = md5_ff(d, a, b, c, x[i + 5], 12, 1200080426)
+      c = md5_ff(c, d, a, b, x[i + 6], 17, -1473231341)
+      b = md5_ff(b, c, d, a, x[i + 7], 22, -45705983)
+      a = md5_ff(a, b, c, d, x[i + 8], 7, 1770035416)
+      d = md5_ff(d, a, b, c, x[i + 9], 12, -1958414417)
+      c = md5_ff(c, d, a, b, x[i + 10], 17, -42063)
+      b = md5_ff(b, c, d, a, x[i + 11], 22, -1990404162)
+      a = md5_ff(a, b, c, d, x[i + 12], 7, 1804603682)
+      d = md5_ff(d, a, b, c, x[i + 13], 12, -40341101)
+      c = md5_ff(c, d, a, b, x[i + 14], 17, -1502002290)
+      b = md5_ff(b, c, d, a, x[i + 15], 22, 1236535329)
+
+      a = md5_gg(a, b, c, d, x[i + 1], 5, -165796510)
+      d = md5_gg(d, a, b, c, x[i + 6], 9, -1069501632)
+      c = md5_gg(c, d, a, b, x[i + 11], 14, 643717713)
+      b = md5_gg(b, c, d, a, x[i], 20, -373897302)
+      a = md5_gg(a, b, c, d, x[i + 5], 5, -701558691)
+      d = md5_gg(d, a, b, c, x[i + 10], 9, 38016083)
+      c = md5_gg(c, d, a, b, x[i + 15], 14, -660478335)
+      b = md5_gg(b, c, d, a, x[i + 4], 20, -405537848)
+      a = md5_gg(a, b, c, d, x[i + 9], 5, 568446438)
+      d = md5_gg(d, a, b, c, x[i + 14], 9, -1019803690)
+      c = md5_gg(c, d, a, b, x[i + 3], 14, -187363961)
+      b = md5_gg(b, c, d, a, x[i + 8], 20, 1163531501)
+      a = md5_gg(a, b, c, d, x[i + 13], 5, -1444681467)
+      d = md5_gg(d, a, b, c, x[i + 2], 9, -51403784)
+      c = md5_gg(c, d, a, b, x[i + 7], 14, 1735328473)
+      b = md5_gg(b, c, d, a, x[i + 12], 20, -1926607734)
+
+      a = md5_hh(a, b, c, d, x[i + 5], 4, -378558)
+      d = md5_hh(d, a, b, c, x[i + 8], 11, -2022574463)
+      c = md5_hh(c, d, a, b, x[i + 11], 16, 1839030562)
+      b = md5_hh(b, c, d, a, x[i + 14], 23, -35309556)
+      a = md5_hh(a, b, c, d, x[i + 1], 4, -1530992060)
+      d = md5_hh(d, a, b, c, x[i + 4], 11, 1272893353)
+      c = md5_hh(c, d, a, b, x[i + 7], 16, -155497632)
+      b = md5_hh(b, c, d, a, x[i + 10], 23, -1094730640)
+      a = md5_hh(a, b, c, d, x[i + 13], 4, 681279174)
+      d = md5_hh(d, a, b, c, x[i], 11, -358537222)
+      c = md5_hh(c, d, a, b, x[i + 3], 16, -722521979)
+      b = md5_hh(b, c, d, a, x[i + 6], 23, 76029189)
+      a = md5_hh(a, b, c, d, x[i + 9], 4, -640364487)
+      d = md5_hh(d, a, b, c, x[i + 12], 11, -421815835)
+      c = md5_hh(c, d, a, b, x[i + 15], 16, 530742520)
+      b = md5_hh(b, c, d, a, x[i + 2], 23, -995338651)
+
+      a = md5_ii(a, b, c, d, x[i], 6, -198630844)
+      d = md5_ii(d, a, b, c, x[i + 7], 10, 1126891415)
+      c = md5_ii(c, d, a, b, x[i + 14], 15, -1416354905)
+      b = md5_ii(b, c, d, a, x[i + 5], 21, -57434055)
+      a = md5_ii(a, b, c, d, x[i + 12], 6, 1700485571)
+      d = md5_ii(d, a, b, c, x[i + 3], 10, -1894986606)
+      c = md5_ii(c, d, a, b, x[i + 10], 15, -1051523)
+      b = md5_ii(b, c, d, a, x[i + 1], 21, -2054922799)
+      a = md5_ii(a, b, c, d, x[i + 8], 6, 1873313359)
+      d = md5_ii(d, a, b, c, x[i + 15], 10, -30611744)
+      c = md5_ii(c, d, a, b, x[i + 6], 15, -1560198380)
+      b = md5_ii(b, c, d, a, x[i + 13], 21, 1309151649)
+      a = md5_ii(a, b, c, d, x[i + 4], 6, -145523070)
+      d = md5_ii(d, a, b, c, x[i + 11], 10, -1120210379)
+      c = md5_ii(c, d, a, b, x[i + 2], 15, 718787259)
+      b = md5_ii(b, c, d, a, x[i + 9], 21, -343485551)
+
+      a = safe_add(a, olda)
+      b = safe_add(b, oldb)
+      c = safe_add(c, oldc)
+      d = safe_add(d, oldd)
+    }
+    return [a, b, c, d]
+  }
+
+  /*
+  * Convert an array of little-endian words to a string
+  */
+  function binl2rstr (input) {
+    var i
+    var output = ''
+    var length32 = input.length * 32
+    for (i = 0; i < length32; i += 8) {
+      output += String.fromCharCode((input[i >> 5] >>> (i % 32)) & 0xFF)
+    }
+    return output
+  }
+
+  /*
+  * Convert a raw string to an array of little-endian words
+  * Characters >255 have their high-byte silently ignored.
+  */
+  function rstr2binl (input) {
+    var i
+    var output = []
+    output[(input.length >> 2) - 1] = undefined
+    for (i = 0; i < output.length; i += 1) {
+      output[i] = 0
+    }
+    var length8 = input.length * 8
+    for (i = 0; i < length8; i += 8) {
+      output[i >> 5] |= (input.charCodeAt(i / 8) & 0xFF) << (i % 32)
+    }
+    return output
+  }
+
+  /*
+  * Calculate the MD5 of a raw string
+  */
+  function rstr_md5 (s) {
+    return binl2rstr(binl_md5(rstr2binl(s), s.length * 8))
+  }
+
+  /*
+  * Calculate the HMAC-MD5, of a key and some data (raw strings)
+  */
+  function rstr_hmac_md5 (key, data) {
+    var i
+    var bkey = rstr2binl(key)
+    var ipad = []
+    var opad = []
+    var hash
+    ipad[15] = opad[15] = undefined
+    if (bkey.length > 16) {
+      bkey = binl_md5(bkey, key.length * 8)
+    }
+    for (i = 0; i < 16; i += 1) {
+      ipad[i] = bkey[i] ^ 0x36363636
+      opad[i] = bkey[i] ^ 0x5C5C5C5C
+    }
+    hash = binl_md5(ipad.concat(rstr2binl(data)), 512 + data.length * 8)
+    return binl2rstr(binl_md5(opad.concat(hash), 512 + 128))
+  }
+
+  /*
+  * Convert a raw string to a hex string
+  */
+  function rstr2hex (input) {
+    var hex_tab = '0123456789abcdef'
+    var output = ''
+    var x
+    var i
+    for (i = 0; i < input.length; i += 1) {
+      x = input.charCodeAt(i)
+      output += hex_tab.charAt((x >>> 4) & 0x0F) +
+      hex_tab.charAt(x & 0x0F)
+    }
+    return output
+  }
+
+  /*
+  * Encode a string as utf-8
+  */
+  function str2rstr_utf8 (input) {
+    return unescape(encodeURIComponent(input))
+  }
+
+  /*
+  * Take string arguments and return either raw or hex encoded strings
+  */
+  function raw_md5 (s) {
+    return rstr_md5(str2rstr_utf8(s))
+  }
+  function hex_md5 (s) {
+    return rstr2hex(raw_md5(s))
+  }
+  function raw_hmac_md5 (k, d) {
+    return rstr_hmac_md5(str2rstr_utf8(k), str2rstr_utf8(d))
+  }
+  function hex_hmac_md5 (k, d) {
+    return rstr2hex(raw_hmac_md5(k, d))
+  }
+
+  function md5 (string, key, raw) {
+    if (!key) {
+      if (!raw) {
+        return hex_md5(string)
+      }
+      return raw_md5(string)
+    }
+    if (!raw) {
+      return hex_hmac_md5(key, string)
+    }
+    return raw_hmac_md5(key, string)
+  }
+
+  if (typeof define === 'function' && define.amd) {
+    define(function () {
+      return md5
+    })
+  } else if (typeof module === 'object' && module.exports) {
+    module.exports = md5
+  } else {
+    $.md5 = md5
+  }
+}(this))

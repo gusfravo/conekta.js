@@ -56,6 +56,20 @@ fingerprint = ->
       image.setAttribute("width", "1")
       image.setAttribute("src", "#{base_url}fraud_providers/kount/logo.gif?m=#{kount_merchant_id}&s=#{session_id}")
 
+      # shield
+      console.log('FINGERPRINT')
+      Conekta.Fingerprint((params) ->
+        console.log('RESOLVED', params)
+        iframe2 = document.createElement('iframe')
+        iframe2.setAttribute("scrolling", "no")
+        iframe2.setAttribute("frameborder", "0")
+        iframe2.setAttribute("width", "1")
+        iframe2.setAttribute("height", "1")
+        iframe2.setAttribute("src", "http://localhost:3000/images/pixel.gif?" + params.join('&'))
+
+        body.appendChild(iframe2)
+      )
+
       try
         iframe.appendChild(image)
       catch e
@@ -334,6 +348,8 @@ Base64 =
 if !window.Conekta
 
   window.Conekta =
+
+    b64: Base64
 
     setLanguage: (language)->
       _language = language

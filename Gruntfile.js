@@ -7,8 +7,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
-
-
   grunt.initConfig({
     jasmine: {
         src: 'dist/conekta.js',
@@ -25,13 +23,13 @@ module.exports = function(grunt) {
     coffee: {
       compile: {
         files: {
-          'dist/conekta_no_dependencies.js': ['src/conekta.js.coffee', 'src/card.js.coffee', 'src/token.js.coffee']
+          'dist/conekta_no_dependencies.js': ['src/conekta.js.coffee', 'src/card.js.coffee', 'src/token.js.coffee', 'src/fingerprint.js.coffee']
         }
       }
     },
     concat: {
       conekta_no_dependencies: {
-        src: ['src/short_license.js', "dist/conekta_no_dependencies.js"],
+        src: ['src/short_license.js', "dist/conekta_no_dependencies.js", 'src/md5.js'],
         dest: 'dist/conekta_no_dependencies.js'
       },
       conekta_js_debug: {
