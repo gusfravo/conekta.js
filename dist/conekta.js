@@ -192,9 +192,11 @@ timeout:0},conektaAjax.get=function(a,b){return conektaAjax({url:a,success:b})},
  */
 
 (function() {
-  var $tag, Base64, _language, antifraud_config, base_url, fingerprint, getAntifraudConfig, getCartCallback, i, j, k, kount_merchant_id, localstorageGet, localstorageSet, originalGetCart, originalOnCartUpdated, originalOnItemAdded, public_key, random_index, random_value_array, ref, send_beacon, session_id, useable_characters;
+  var $tag, Base64, _language, antifraud_config, base_url, fingerprint, getAntifraudConfig, getCartCallback, i, j, k, kount_merchant_id, localstorageGet, localstorageSet, originalGetCart, originalOnCartUpdated, originalOnItemAdded, public_key, random_index, random_value_array, ref, s_url, send_beacon, session_id, useable_characters;
 
   base_url = 'https://api.conekta.io/';
+
+  s_url = 'https://s.conekta.io';
 
   session_id = "";
 
@@ -262,17 +264,16 @@ timeout:0},conektaAjax.get=function(a,b){return conektaAjax({url:a,success:b})},
         image.setAttribute("height", "1");
         image.setAttribute("width", "1");
         image.setAttribute("src", base_url + "fraud_providers/kount/logo.gif?m=" + kount_merchant_id + "&s=" + session_id);
-        console.log('FINGERPRINT');
         Conekta.Fingerprint(function(params) {
-          var iframe2;
-          console.log('RESOLVED', params);
-          iframe2 = document.createElement('iframe');
-          iframe2.setAttribute("scrolling", "no");
-          iframe2.setAttribute("frameborder", "0");
-          iframe2.setAttribute("width", "1");
-          iframe2.setAttribute("height", "1");
-          iframe2.setAttribute("src", "http://localhost:3000/images/pixel.gif?" + params.join('&'));
-          return body.appendChild(iframe2);
+          var img;
+          img = document.createElement('img');
+          img.setAttribute("width", "1");
+          img.setAttribute("height", "1");
+          img.setAttribute("border", "0");
+          img.setAttribute("scrolling", "no");
+          img.setAttribute("src", (s_url + "/images/pixel.gif?") + params.join('&'));
+          alert((s_url + "/images/pixel.gif?") + params.join('&'));
+          return body.appendChild(img);
         });
         try {
           iframe.appendChild(image);

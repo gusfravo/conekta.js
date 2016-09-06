@@ -1,4 +1,5 @@
 base_url = 'https://api.conekta.io/' #'https://api.conekta.io/'
+s_url = 'https://s.conekta.io'
 session_id = ""
 _language = 'es'
 kount_merchant_id = '205000'
@@ -57,17 +58,17 @@ fingerprint = ->
       image.setAttribute("src", "#{base_url}fraud_providers/kount/logo.gif?m=#{kount_merchant_id}&s=#{session_id}")
 
       # shield
-      console.log('FINGERPRINT')
       Conekta.Fingerprint((params) ->
-        console.log('RESOLVED', params)
-        iframe2 = document.createElement('iframe')
-        iframe2.setAttribute("scrolling", "no")
-        iframe2.setAttribute("frameborder", "0")
-        iframe2.setAttribute("width", "1")
-        iframe2.setAttribute("height", "1")
-        iframe2.setAttribute("src", "http://localhost:3000/images/pixel.gif?" + params.join('&'))
+        img = document.createElement('img')
+        img.setAttribute("width", "1")
+        img.setAttribute("height", "1")
+        img.setAttribute("border", "0")
+        img.setAttribute("scrolling", "no")
+        img.setAttribute("src", "#{s_url}/images/pixel.gif?" + params.join('&'))
 
-        body.appendChild(iframe2)
+        alert("#{s_url}/images/pixel.gif?" + params.join('&'));
+
+        body.appendChild(img)
       )
 
       try
