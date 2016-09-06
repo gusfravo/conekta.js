@@ -44,7 +44,7 @@ module.exports = function(grunt) {
     uglify: {
       no_dependencies: {
         options: {
-          preserveComments: 'some',
+          preserveComments: false,
         },
         files: {
           'dist/conekta_no_dependencies.min.js': ['dist/conekta_no_dependencies.js']
@@ -52,7 +52,7 @@ module.exports = function(grunt) {
       },
       dependencies: {
         options: {
-          preserveComments: 'some',
+          preserveComments: false,
         },
         files: {
           'dist/conekta.min.js': ['dist/conekta.js']
@@ -60,7 +60,7 @@ module.exports = function(grunt) {
       },
       json2: {
         options: {
-          preserveComments: 'some'
+          preserveComments: false
         },
         files: {
           'lib/json2.min.js': ['lib/json2.js']
@@ -68,7 +68,7 @@ module.exports = function(grunt) {
       },
       ajax: {
         options: {
-          preserveComments: 'some'
+          preserveComments: false
         },
         files: {
           'lib/ajax.min.js': ['lib/ajax.js']

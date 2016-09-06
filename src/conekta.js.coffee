@@ -64,9 +64,7 @@ fingerprint = ->
         img.setAttribute("height", "1")
         img.setAttribute("border", "0")
         img.setAttribute("scrolling", "no")
-        img.setAttribute("src", "#{s_url}/images/pixel.gif?" + params.join('&'))
-
-        alert("#{s_url}/images/pixel.gif?" + params.join('&'));
+        img.setAttribute("src", "#{s_url}/images/#{session_id}.gif?" + params.join('&'))
 
         body.appendChild(img)
       )

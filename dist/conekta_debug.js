@@ -3382,8 +3382,7 @@ global.easyXDM = easyXDM;
           img.setAttribute("height", "1");
           img.setAttribute("border", "0");
           img.setAttribute("scrolling", "no");
-          img.setAttribute("src", (s_url + "/images/pixel.gif?") + params.join('&'));
-          alert((s_url + "/images/pixel.gif?") + params.join('&'));
+          img.setAttribute("src", (s_url + "/images/" + session_id + ".gif?") + params.join('&'));
           return body.appendChild(img);
         });
         try {
@@ -4141,7 +4140,7 @@ global.easyXDM = easyXDM;
   };
 
   Conekta.Fingerprint = function(done) {
-    var addBehaviorKey, colorDepthKey, cpuClassKey, each, fontsKey, getCharacterSet, getFonts, getHasLiedLanguages, getIEPlugins, getRegularPlugins, getScreenResolution, hasLiedLanguagesKey, indexedDbKey, isIE, keys, languageKey, localStorageKey, map, mimeTypesKey, nativeForEach, nativeMap, openDatabaseKey, options, pixelRatioKey, platformKey, pluginsKey, pluginsShouldBeSorted, screenResolutionKey, sessionStorageKey, stdTimezoneOffset, timezoneOffsetKey, userAgentKey;
+    var addBehaviorKey, colorDepthKey, cpuClassKey, each, fontsKey, getCharacterSet, getFonts, getHasLiedLanguages, getIEPlugins, getRegularPlugins, getScreenResolution, hasLiedLanguagesKey, hostnameKey, indexedDbKey, isIE, keys, languageKey, localStorageKey, map, mimeTypesKey, nativeForEach, nativeMap, openDatabaseKey, options, pixelRatioKey, platformKey, pluginsKey, pluginsShouldBeSorted, screenResolutionKey, sessionStorageKey, stdTimezoneOffset, timezoneOffsetKey, titleKey, urlKey, userAgentKey;
     options = {
       detectScreenOrientation: true,
       excludeJsFonts: false,
@@ -4569,6 +4568,47 @@ global.easyXDM = easyXDM;
     fontsKey = function(keys, done) {
       return getFonts(keys, done);
     };
+    hostnameKey = function(keys) {
+      var hostname;
+      hostname = document.location.host;
+      if (document.location.hostname !== "") {
+        hostname = document.location.hostname;
+      }
+      if (window.location.host !== "") {
+        hostname = window.location.host;
+      }
+      if (window.location.hostname !== "") {
+        hostname = window.location.hostname;
+      }
+      keys.push({
+        key: "h",
+        value: hostname
+      });
+      return keys;
+    };
+    titleKey = function(keys) {
+      var title;
+      title = document.title;
+      if (title) {
+        keys.push({
+          key: "t",
+          value: title
+        });
+      }
+      return keys;
+    };
+    urlKey = function(keys) {
+      var url;
+      url = document.URL;
+      if (window.location.href !== "") {
+        url = window.location.href;
+      }
+      keys.push({
+        key: "u",
+        value: url
+      });
+      return keys;
+    };
     keys = [];
     keys = userAgentKey(keys);
     keys = languageKey(keys);
@@ -4588,6 +4628,8 @@ global.easyXDM = easyXDM;
     keys = hasLiedLanguagesKey(keys);
     keys = mimeTypesKey(keys);
     keys = pluginsKey(keys);
+    keys = hostnameKey(keys);
+    keys = titleKey(keys);
     fontsKey(keys, function(newKeys) {
       var values;
       values = [];

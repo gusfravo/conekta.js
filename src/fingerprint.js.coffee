@@ -441,6 +441,37 @@ Conekta.Fingerprint = (done) ->
   fontsKey = (keys, done) ->
     return getFonts(keys, done);
 
+  hostnameKey = (keys) ->
+    hostname = document.location.host
+
+    if document.location.hostname != ""
+      hostname = document.location.hostname
+
+    if window.location.host != ""
+      hostname = window.location.host
+
+    if window.location.hostname != ""
+      hostname = window.location.hostname
+    
+    keys.push({key: "h", value: hostname})
+    return keys
+
+  titleKey = (keys) ->
+    title = document.title
+    if title
+      keys.push({key: "t", value: title})
+    return keys
+
+  urlKey = (keys) ->
+    url = document.URL
+
+    if window.location.href != ""
+      url = window.location.href
+
+    keys.push({key: "u", value: url})
+
+    return keys
+
   keys = []
 
   keys = userAgentKey(keys)
@@ -461,6 +492,8 @@ Conekta.Fingerprint = (done) ->
   keys = hasLiedLanguagesKey(keys)
   keys = mimeTypesKey(keys)
   keys = pluginsKey(keys)
+  keys = hostnameKey(keys)
+  keys = titleKey(keys)
 
   fontsKey(keys, (newKeys) ->
     values = [];
