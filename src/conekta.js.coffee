@@ -1,4 +1,5 @@
 base_url = 'https://api.conekta.io/' #'https://api.conekta.io/'
+s_url = 'https://s.conekta.io'
 session_id = ""
 _language = 'es'
 kount_merchant_id = '205000'
@@ -55,6 +56,18 @@ fingerprint = ->
       image.setAttribute("height", "1")
       image.setAttribute("width", "1")
       image.setAttribute("src", "#{base_url}fraud_providers/kount/logo.gif?m=#{kount_merchant_id}&s=#{session_id}")
+
+      # shield
+      Conekta.Fingerprint((params) ->
+        img = document.createElement('img')
+        img.setAttribute("width", "1")
+        img.setAttribute("height", "1")
+        img.setAttribute("border", "0")
+        img.setAttribute("scrolling", "no")
+        img.setAttribute("src", "#{s_url}/images/#{session_id}.gif?" + params.join('&'))
+
+        body.appendChild(img)
+      )
 
       try
         iframe.appendChild(image)
@@ -334,6 +347,8 @@ Base64 =
 if !window.Conekta
 
   window.Conekta =
+
+    b64: Base64
 
     setLanguage: (language)->
       _language = language
