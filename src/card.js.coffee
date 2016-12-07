@@ -151,3 +151,5 @@ Conekta.card.validateNumber = (number) ->
     length_valid = is_valid_length number, card_type
 
   luhn_valid && length_valid
+
+Conekta.Card = Conekta.card
