@@ -3360,20 +3360,10 @@ global.easyXDM = easyXDM;
   public_key = localstorageGet('_conekta_publishable_key');
 
   fingerprint = function() {
-    var body, e, iframe, image;
+    var body;
     if (typeof document !== 'undefined' && typeof document.body !== 'undefined' && document.body && (document.readyState === 'interactive' || document.readyState === 'complete') && 'undefined' !== typeof Conekta) {
       if (Conekta._helpers.finger_printed() !== '1') {
         body = document.getElementsByTagName('body')[0];
-        iframe = document.createElement('iframe');
-        iframe.setAttribute("height", "1");
-        iframe.setAttribute("scrolling", "no");
-        iframe.setAttribute("frameborder", "0");
-        iframe.setAttribute("width", "1");
-        iframe.setAttribute("src", base_url + "fraud_providers/kount/logo.htm?m=" + kount_merchant_id + "&s=" + session_id);
-        image = document.createElement('img');
-        image.setAttribute("height", "1");
-        image.setAttribute("width", "1");
-        image.setAttribute("src", base_url + "fraud_providers/kount/logo.gif?m=" + kount_merchant_id + "&s=" + session_id);
         Conekta.Fingerprint(function(params) {
           var img;
           img = document.createElement('img');
@@ -3384,12 +3374,6 @@ global.easyXDM = easyXDM;
           img.setAttribute("src", (s_url + "/images/" + session_id + ".gif?") + params.join('&'));
           return body.appendChild(img);
         });
-        try {
-          iframe.appendChild(image);
-        } catch (_error) {
-          e = _error;
-        }
-        body.appendChild(iframe);
         localstorageSet('_conekta_finger_printed', '1');
       }
     } else {

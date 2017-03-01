@@ -43,17 +43,17 @@ fingerprint = ->
 
       #if ! (location.protocol == 'https:' and (navigator.userAgent.match(/MSIE/) or navigator.userAgent.match(/Trident\/7\./)))
       #fingerprinting png
-      iframe = document.createElement('iframe')
-      iframe.setAttribute("height", "1")
-      iframe.setAttribute("scrolling", "no")
-      iframe.setAttribute("frameborder", "0")
-      iframe.setAttribute("width", "1")
-      iframe.setAttribute("src", "#{base_url}fraud_providers/kount/logo.htm?m=#{kount_merchant_id}&s=#{session_id}")
+      # iframe = document.createElement('iframe')
+      # iframe.setAttribute("height", "1")
+      # iframe.setAttribute("scrolling", "no")
+      # iframe.setAttribute("frameborder", "0")
+      # iframe.setAttribute("width", "1")
+      # iframe.setAttribute("src", "#{base_url}fraud_providers/kount/logo.htm?m=#{kount_merchant_id}&s=#{session_id}")
 
-      image = document.createElement('img')
-      image.setAttribute("height", "1")
-      image.setAttribute("width", "1")
-      image.setAttribute("src", "#{base_url}fraud_providers/kount/logo.gif?m=#{kount_merchant_id}&s=#{session_id}")
+      # image = document.createElement('img')
+      # image.setAttribute("height", "1")
+      # image.setAttribute("width", "1")
+      # image.setAttribute("src", "#{base_url}fraud_providers/kount/logo.gif?m=#{kount_merchant_id}&s=#{session_id}")
 
       # shield
       Conekta.Fingerprint((params) ->
@@ -67,12 +67,12 @@ fingerprint = ->
         body.appendChild(img)
       )
 
-      try
-        iframe.appendChild(image)
-      catch e
+      # try
+      #   iframe.appendChild(image)
+      # catch e
         #do nothing
 
-      body.appendChild(iframe)
+      # body.appendChild(iframe)
 
       localstorageSet('_conekta_finger_printed', '1');
   else
