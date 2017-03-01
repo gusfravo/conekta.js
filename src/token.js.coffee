@@ -46,3 +46,7 @@ Conekta.Token.create = (token_form, success_callback, failure_callback)->
       'message':"Supplied parameter 'token' is not a javascript object or a form"
       'message_to_purchaser':"The card could not be processed, please try again later"
     )
+
+# TODO: Deprecate on version 2.0.0
+Conekta.token = {}
+Conekta.token.create = Conekta.Token.create

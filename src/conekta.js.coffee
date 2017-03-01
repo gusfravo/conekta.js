@@ -37,9 +37,7 @@ public_key = localstorageGet('_conekta_publishable_key')
 
 fingerprint = ->
   if typeof document != 'undefined' and typeof document.body != 'undefined' and document.body and (document.readyState == 'interactive' or document.readyState == 'complete') and 'undefined' != typeof Conekta
-    if ! Conekta._helpers.finger_printed
-      Conekta._helpers.finger_printed = true
-
+    if Conekta._helpers.finger_printed() != '1'
       #kount
       body = document.getElementsByTagName('body')[0]
 
@@ -75,6 +73,8 @@ fingerprint = ->
         #do nothing
 
       body.appendChild(iframe)
+
+      localstorageSet('_conekta_finger_printed', '1');
   else
     setTimeout(fingerprint, 150)
 
@@ -364,11 +364,20 @@ if !window.Conekta
         Conekta._helpers.log('Unusable public key: ' + key)
       return
 
+    # TODO: Deprecate on version 2.0.0
+    setPublishableKey: (key) ->
+      return setPublicKey(key)
+
     getPublicKey: (key) ->
       public_key
 
+    # TODO: Deprecate on version 2.0.0
+    getPublishableKey: () ->
+      return getPublicKey()
+
     _helpers:
-      finger_printed: false
+      finger_printed: () ->
+        return localstorageGet('_conekta_finger_printed')
       beacon_sent: false
       objectKeys:(obj)->
         keys = []
