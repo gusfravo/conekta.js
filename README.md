@@ -1,4 +1,4 @@
-![alt tag](https://raw.github.com/conekta/conekta.js/master/readme_files/conekta_js_readme_cover.png)
+![CONEKTA.JS Readme Cover](conekta_js_readme_cover.png)
 
 Conekta.JS 0.5.0
 ===
@@ -139,8 +139,8 @@ docker run -ti conekta/conekta.js /bin/bash --login
 ```
 ## License
 
-Developed by [Conekta](https://www.conekta.io). Available with [MIT License](LICENSE).
+Developed by [Conekta](https://www.conekta.com). Available with [MIT License](LICENSE).
 
-## We are hiring
+## We are always hiring!
 
-If you are a comfortable working with a range of backend languages (Java, Python, Ruby, PHP, etc) and frameworks, you have solid foundation in data structures, algorithms and software design with strong analytical and debugging skills. Send your CV, github to quieroser@conekta.io
+If you are a comfortable working with a range of backend languages (Java, Python, Ruby, PHP, etc) and frameworks, you have solid foundation in data structures, algorithms and software design with strong analytical and debugging skills. Send us your CV and GitHub to quieroser@conekta.com
