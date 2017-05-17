@@ -1,4 +1,4 @@
-![CONEKTA.JS Readme Cover](conekta_js_readme_cover.png)
+![CONEKTA.JS Readme Cover](readme_cover.png)
 
 Conekta.JS 0.5.0
 ===
