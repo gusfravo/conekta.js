@@ -139,7 +139,7 @@ docker run -ti conekta/conekta.js /bin/bash --login
 ```
 ## License
 
-Developed by [Conekta](https://www.conekta.com). Available with [MIT License](LICENSE).
+Developed in Mexico by [Conekta](https://www.conekta.com) in. Available with [MIT License](LICENSE).
 
 ***
 
