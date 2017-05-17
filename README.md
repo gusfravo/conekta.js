@@ -1,4 +1,4 @@
-![alt tag](https://raw.github.com/conekta/conekta.js/master/readme_files/cover.png)
+![alt tag](https://raw.github.com/conekta/conekta.js/master/readme_files/conekta_js_readme_cover.png)
 
 Conekta.JS 0.5.0
 ===
