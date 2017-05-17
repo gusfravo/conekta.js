@@ -1,4 +1,4 @@
-![CONEKTA.JS Readme Cover](readme_cover.png)
+![README Cover Image](readme_cover.png)
 
 Conekta.JS 0.5.0
 ===
@@ -140,6 +140,8 @@ docker run -ti conekta/conekta.js /bin/bash --login
 ## License
 
 Developed by [Conekta](https://www.conekta.com). Available with [MIT License](LICENSE).
+
+***
 
 ## We are always hiring!
 
