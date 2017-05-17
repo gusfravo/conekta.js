@@ -116,7 +116,7 @@ Conekta.Token.create($('#card-form'), successHandler, errorHandler);
 
 ## Documentation
 
-Please see https://www.conekta.io/docs/api for up-to-date documentation.
+Please see https://developers.conekta.com/api for up-to-date documentation.
 
 ## Library Development and Testing
 
